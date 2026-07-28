@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonda · reimagined</title>
+    <!-- Font Awesome (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #0b0e1a 0%, #1a1f2f 100%);
+            background-image: radial-gradient(circle at 20% 30%, #2b2f4a 0%, #0c0f1a 90%);
+            padding: 1.5rem;
+            margin: 0;
+            /* subtle animated grain */
+            position: relative;
+        }
+
+        /* glass-morphism card */
+        #main-div {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            background: rgba(20, 25, 45, 0.55);
+            border: 1px solid rgba(255, 215, 100, 0.15);
+            border-radius: 48px;
+            padding: 2.8rem 2.8rem 2.5rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 100, 0.08) inset;
+            transition: all 0.3s ease;
+            color: #f0f3ff;
+            text-align: center;
+        }
+
+        /* brand headline */
+        #main-div h2 {
+            font-size: 2.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #main-div h2 i {
+            font-size: 2.2rem;
+            color: #fbbf24;
+            background: transparent;
+            filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.3));
+        }
+
+        .sub-head {
+            font-size: 0.95rem;
+            color: #aab3d0;
+            letter-spacing: 0.3px;
+            margin-top: -6px;
+            margin-bottom: 2.2rem;
+            border-bottom: 1px dashed rgba(255, 215, 100, 0.15);
+            padding-bottom: 1.2rem;
+        }
+
+        /* all buttons base */
+        button {
+            width: 100%;
+            padding: 0.9rem 0;
+            border: none;
+            border-radius: 60px;
+            font-weight: 550;
+            font-size: 1.05rem;
+            letter-spacing: 0.3px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #f0f3ff;
+            border: 1px solid rgba(255, 215, 100, 0.15);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0.9rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button i {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        /* primary sign in / sign up */
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 1px solid #fbbf24;
+            color: #0b0e1a;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-primary i {
+            color: #1a1f2f;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 16px 32px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
+            border-color: #fbbf24;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 215, 100, 0.2);
+            backdrop-filter: blur(8px);
+            color: #e8edff;
+        }
+
+        .btn-secondary i {
+            color: #fbbf24;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 215, 100, 0.08);
+            border-color: #fbbf24;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+        }
+
+        /* google button */
+        .btn-google {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(6px);
+            color: #d6def0;
+            margin-top: 0.5rem;
+        }
+
+        .btn-google i {
+            color: #fbbf24;
+            font-size: 1.3rem;
+        }
+
+        .btn-google:hover {
+            background: rgba(255, 215, 100, 0.06);
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 1.8rem 0 1.2rem;
+            color: #707ba0;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 100, 0.2), transparent);
+        }
+
+        /* subtle extra style: glow pulse on card */
+        #main-div::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 48px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), transparent 50%, rgba(245, 158, 11, 0.05));
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        #main-div {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* responsive touch */
+        @media (max-width: 480px) {
+            #main-div {
+                padding: 2rem 1.5rem;
+                border-radius: 32px;
+            }
+            #main-div h2 {
+                font-size: 2.2rem;
+            }
+            button {
+                font-size: 0.95rem;
+                padding: 0.8rem 0;
+            }
+        }
+
+        /* extra micro-interaction */
+        button:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* small icon spacing */
+        .btn-icon {
+            margin-right: 6px;
+        }
+
+        .fa-google {
+            background: transparent;
+        }
+
+        /* hide hr, we use divider */
+        hr {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-div">
+        <h2>
+            <i class="fas fa-bolt" style="font-size: 2rem;"></i> Bonda
+        </h2>
+        <div class="sub-head">
+            <i class="fas fa-circle" style="color: #fbbf24; font-size: 0.4rem; vertical-align: middle; margin-right: 6px;"></i> 
+            welcome back · secure access
+        </div>
+
+        <!-- Sign In - primary -->
+        <button class="btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <!-- Sign Up - secondary -->
+        <button class="btn-secondary">
+            <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+
+        <!-- divider instead of <hr> -->
+        <div class="divider">
+            <i class="fas fa-ellipsis-h" style="font-size: 0.7rem; opacity: 0.5;"></i> 
+            or continue with 
+            <i class="fas fa-ellipsis-h" style="font-size: 0.7rem; opacity: 0.5;"></i>
+        </div>
+
+        <!-- Google -->
+        <button class="btn-google">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+
+        <!-- subtle extra: small hint -->
+        <div style="margin-top: 1.8rem; font-size: 0.7rem; color: #5e6a92; letter-spacing: 0.2px; display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(255,215,100,0.05); padding-top: 1.2rem;">
+            <span><i class="far fa-clock" style="margin-right: 4px;"></i> 24/7</span>
+            <span><i class="fas fa-shield-alt" style="margin-right: 4px;"></i> encrypted</span>
+        </div>
+    </div>
+</body>
+</html>
