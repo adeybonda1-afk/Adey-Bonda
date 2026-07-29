@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Information</title>
+    <style>
+         body {
+             background: linear-gradient(-45deg,#494949, #222222, #000000, black);
+             background-size: 100vw 100vh;
+             height: 100vh;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+         
+        .mainDiv{
+            background: linear-gradient(-45deg, #ff9315, #ff9340, #ffb200);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+       .mainDiv h2{
+           text-align: center;
+       }
+       
+      .mainDiv input{
+          padding: 10px 50px;
+          display: block;
+          margin: 5px;
+          border-radius: 7px;
+      }  
+     
+         
+         
+         
+    </style>
+</head>
+<body>
+    <div class = "mainDiv">
+        <h2>Adey Bonda</h2>
+    <form>        
+        <input id="name-input" type="text" placeholder="What is Your name?">
+        <input id="tel-input" type="tel" placeholder="Enter your phone number">
+        <button id="submit-button" type="submit">Done</button>     
+    </form>
+    </div>
+    <script type="module">
+        
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+ import { getDatabase, ref, get, update, set, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+ import { getAuth, onAuthStateChanged} 
+      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";       
+ 
+ const firebaseConfig = {
+  apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+  authDomain: "adey-bonda.firebaseapp.com",
+  projectId: "adey-bonda",
+  storageBucket: "adey-bonda.firebasestorage.app",
+  messagingSenderId: "820555835547",
+  appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+let IsInformationEntered = localStorage.getItem("IsInformationEntered");
+
+document.querySelector("#submit-button").addEventListener("submit", async function(e) {
+    e.preventDefault();     
+    const name = document.getElementById("name-input").value;
+    const tel = document.getElementById("tel-input").value;
+    if(name == "" || tel == "") {
+        alert("please Insert two of them!!");
+        return;
+    }
+    
+    push(ref(db, "AdeyBonda/users/"), {
+        name: name,
+        phoneNumber: tel
+    })
+    
+    localStorage.setItem("IsInformationEntered", true);
+    window.location.href = "home.html";
+    
+});      
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("Logged in");
+        console.log(user);
+        
+        if(IsInformationEntered) window.location.href = "home.html";
+        else return;                   
+
+    } else {
+        window.location.href = "index.html";
+    }
+
+});  
+    </script>
+</body>
+</html>
