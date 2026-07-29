@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +65,7 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
 
-document.querySelector("#submit-button").addEventListener("submit", async function(e) {
+document.querySelector("form").addEventListener("submit", async function(e) {
     e.preventDefault();     
     const name = document.getElementById("name-input").value;
     const tel = document.getElementById("tel-input").value;
@@ -75,7 +74,7 @@ document.querySelector("#submit-button").addEventListener("submit", async functi
         return;
     }
     
-    push(ref(db, "AdeyBonda/users/"), {
+    push(ref(database, "AdeyBonda/users/"), {
         name: name,
         phoneNumber: tel
     })
@@ -86,7 +85,7 @@ document.querySelector("#submit-button").addEventListener("submit", async functi
         alert(error);
     });
     
-    localStorage.setItem("IsInformationEntered", true);
+    localStorage.setItem("IsInformationEntered", "true");
     window.location.href = "home.html";
     
 });      
@@ -96,7 +95,7 @@ onAuthStateChanged(auth, (user) => {
         console.log("Logged in");
         console.log(user);
         
-        if(IsInformationEntered) window.location.href = "home.html";
+        if(IsInformationEntered == "true") window.location.href = "home.html";
         else return;                   
 
     } else {
