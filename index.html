@@ -241,7 +241,7 @@ onAuthStateChanged(auth, (user) => {
         console.log("Logged in");
         console.log(user);
         
-        if(IsInformationEntered) window.location.href = "home.html";
+        if(IsInformationEntered == "true") window.location.href = "home.html";
         else window.location.href = "insert information.html";
                    
 
