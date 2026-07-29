@@ -79,6 +79,12 @@ document.querySelector("#submit-button").addEventListener("submit", async functi
         name: name,
         phoneNumber: tel
     })
+    .then(() => {
+        alert("Data saved successfully!");
+    })
+    .catch((error) => {
+        alert(error);
+    });
     
     localStorage.setItem("IsInformationEntered", true);
     window.location.href = "home.html";
