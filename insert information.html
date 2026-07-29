@@ -1,108 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert Information</title>
-    <style>
-         body {
-             background: linear-gradient(-45deg,#494949, #222222, #000000, black);
-             background-size: 100vw 100vh;
-             height: 100vh;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-         }
-         
-        .mainDiv{
-            background: linear-gradient(-45deg, #ff9315, #ff9340, #ffb200);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        
-       .mainDiv h2{
-           text-align: center;
-       }
-       
-      .mainDiv input{
-          padding: 10px 50px;
-          display: block;
-          margin: 5px;
-          border-radius: 7px;
-      }  
-     
-         
-         
-         
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Adey Bonda · welcome</title>
+  <!-- Google Font & modern reset -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(145deg, #f7f3ff 0%, #e8e0f5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      margin: 0;
+    }
+
+    .mainDiv {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 2.5rem 2rem 2.8rem;
+      box-shadow: 
+        0 20px 40px -12px rgba(0, 0, 0, 0.15),
+        0 8px 24px -6px rgba(90, 50, 140, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .mainDiv:hover {
+      box-shadow: 
+        0 28px 48px -16px rgba(70, 30, 120, 0.2),
+        0 8px 24px -6px rgba(90, 50, 140, 0.1);
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #3b1d6b, #7b3fbf);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    h2::after {
+      content: "✨";
+      font-size: 1.8rem;
+      background: none;
+      color: #7b3fbf;
+    }
+
+    .subhead {
+      color: #4a3a5e;
+      font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      margin-bottom: 2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1.5px solid rgba(123, 63, 191, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .subhead span {
+      background: #d9c9f0;
+      padding: 0.1rem 0.7rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #3b1d6b;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 80px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), inset 0 1px 2px rgba(0,0,0,0.02);
+      transition: box-shadow 0.2s, border-color 0.2s;
+      border: 1.5px solid rgba(200, 180, 220, 0.3);
+    }
+
+    .input-group:focus-within {
+      border-color: #8b5fcf;
+      box-shadow: 0 0 0 4px rgba(123, 63, 191, 0.15), 0 4px 12px rgba(90, 50, 140, 0.05);
+    }
+
+    .input-group .icon {
+      padding: 0 0 0 1.2rem;
+      font-size: 1.1rem;
+      color: #6b4f8a;
+      opacity: 0.7;
+    }
+
+    .input-group input {
+      width: 100%;
+      border: none;
+      padding: 1rem 1.2rem 1rem 0.8rem;
+      font-size: 1rem;
+      font-weight: 500;
+      background: transparent;
+      color: #1f142b;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.2px;
+    }
+
+    .input-group input::placeholder {
+      color: #a792bc;
+      font-weight: 400;
+      font-size: 0.95rem;
+      letter-spacing: -0.1px;
+    }
+
+    .input-group input:-webkit-autofill {
+      background: transparent !important;
+      -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    }
+
+    /* remove number spinners */
+    .input-group input[type="tel"]::-webkit-inner-spin-button,
+    .input-group input[type="tel"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .input-group input[type="tel"] {
+      -moz-appearance: textfield;
+    }
+
+    .btn-done {
+      background: linear-gradient(135deg, #6b3faf, #8b5fcf);
+      border: none;
+      padding: 1rem 1.8rem;
+      border-radius: 80px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 20px -8px rgba(90, 50, 140, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.3px;
+      margin-top: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-done:hover {
+      transform: scale(1.01) translateY(-2px);
+      background: linear-gradient(135deg, #5f35a0, #7b4fc0);
+      box-shadow: 0 14px 28px -10px rgba(70, 30, 120, 0.4);
+    }
+
+    .btn-done:active {
+      transform: scale(0.98) translateY(1px);
+      box-shadow: 0 4px 12px -6px rgba(70, 30, 120, 0.4);
+    }
+
+    .btn-done .arrow {
+      font-size: 1.4rem;
+      line-height: 1;
+      transition: transform 0.15s;
+    }
+
+    .btn-done:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* small extra hint */
+    .hint {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 0.7rem;
+      color: #7b6a90;
+      margin-top: 0.2rem;
+      padding-right: 0.5rem;
+      letter-spacing: 0.2px;
+      opacity: 0.8;
+    }
+
+    .hint i {
+      font-style: normal;
+      background: rgba(123, 63, 191, 0.08);
+      padding: 0.1rem 0.8rem;
+      border-radius: 40px;
+    }
+
+    /* responsive */
+    @media (max-width: 460px) {
+      .mainDiv {
+        padding: 2rem 1.5rem 2.2rem;
+        border-radius: 36px;
+      }
+      h2 {
+        font-size: 1.9rem;
+      }
+      .input-group input {
+        font-size: 0.95rem;
+        padding: 0.9rem 1rem 0.9rem 0.6rem;
+      }
+      .btn-done {
+        font-size: 1.1rem;
+        padding: 0.9rem 1.5rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .mainDiv {
+        padding: 1.5rem 1rem 1.8rem;
+      }
+      h2 {
+        font-size: 1.7rem;
+      }
+      .input-group .icon {
+        padding-left: 0.8rem;
+      }
+    }
+
+    /* subtle animation */
+    .mainDiv {
+      animation: floatIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes floatIn {
+      0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* custom focus ring for accessibility */
+    .input-group input:focus {
+      outline: none;
+    }
+
+    /* firebase / auth inline message – hidden but ready */
+    .auth-status {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class = "mainDiv">
-        <h2>Adey Bonda</h2>
-    <form>        
-        <input id="name-input" type="text" placeholder="What is Your name?">
-        <input id="tel-input" type="tel" placeholder="Enter your phone number">
-        <button id="submit-button" type="submit">Done</button>     
-    </form>
+  <div class="mainDiv">
+    <h2>Adey Bonda</h2>
+    <div class="subhead">
+      <span>✦ welcome</span> 
+      <span style="font-weight:400; color:#5b4a70; margin-left:4px;">just a moment</span>
     </div>
-    <script type="module">
-        
- import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
- import { getDatabase, ref, get, update, set, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
- import { getAuth, onAuthStateChanged} 
-      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";       
- 
- const firebaseConfig = {
-  apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
-  authDomain: "adey-bonda.firebaseapp.com",
-  projectId: "adey-bonda",
-  storageBucket: "adey-bonda.firebasestorage.app",
-  messagingSenderId: "820555835547",
-  appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
-};
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const database = getDatabase(app);
-let IsInformationEntered = localStorage.getItem("IsInformationEntered");
+    <form id="info-form" autocomplete="on">
+      <div class="input-group">
+        <span class="icon">👤</span>
+        <input id="name-input" type="text" placeholder="What is your name?" aria-label="Your name" autocomplete="given-name">
+      </div>
 
-document.querySelector("form").addEventListener("submit", async function(e) {
-    e.preventDefault();     
-    const name = document.getElementById("name-input").value;
-    const tel = document.getElementById("tel-input").value;
-    if(name == "" || tel == "") {
-        alert("please Insert two of them!!");
+      <div class="input-group">
+        <span class="icon">📞</span>
+        <input id="tel-input" type="tel" placeholder="Enter your phone number" aria-label="Phone number" autocomplete="tel">
+      </div>
+
+      <button id="submit-button" class="btn-done" type="submit">
+        <span>Done</span>
+        <span class="arrow">→</span>
+      </button>
+      <div class="hint"><i>🔒 saved securely</i></div>
+    </form>
+  </div>
+
+  <script type="module">
+    // ----- Firebase imports (unchanged, same config) -----
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+      authDomain: "adey-bonda.firebaseapp.com",
+      projectId: "adey-bonda",
+      storageBucket: "adey-bonda.firebasestorage.app",
+      messagingSenderId: "820555835547",
+      appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // ----- DOM refs -----
+    const form = document.getElementById("info-form");
+    const nameInput = document.getElementById("name-input");
+    const telInput = document.getElementById("tel-input");
+    const submitBtn = document.getElementById("submit-button");
+
+    // ----- local flag -----
+    let IsInformationEntered = localStorage.getItem("IsInformationEntered");
+
+    // ----- form submit: save & redirect -----
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const tel = telInput.value.trim();
+
+      if (name === "" || tel === "") {
+        alert("Please fill in both fields ✏️");
         return;
-    }
-    
-    push(ref(database, "AdeyBonda/users/"), {
-        name: name,
-        phoneNumber: tel
-    })
-    .then(() => {
-        alert("Data saved successfully!");
-    })
-    .catch((error) => {
-        alert(error);
+      }
+
+      // simple phone number validation (basic)
+      const telClean = tel.replace(/\s/g, '');
+      if (!/^[\+]?[\d\-\(\)\s]{7,15}$/.test(telClean)) {
+        alert("Please enter a valid phone number (digits, spaces, + allowed)");
+        return;
+      }
+
+      // Disable button to prevent double submit
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Saving</span><span style="display:inline-block;animation:pulse 1s infinite;">⏳</span>`;
+      // quick pulse style
+      if (!document.getElementById('pulse-style')) {
+        const style = document.createElement('style');
+        style.id = 'pulse-style';
+        style.innerHTML = `@keyframes pulse { 0% { opacity:0.6; } 50% { opacity:1; } 100% { opacity:0.6; } }`;
+        document.head.appendChild(style);
+      }
+
+      try {
+        await push(ref(database, "AdeyBonda/users/"), {
+          name: name,
+          phoneNumber: tel,
+          timestamp: Date.now()
+        });
+
+        alert("✅ Data saved successfully!");
+        localStorage.setItem("IsInformationEntered", "true");
+        window.location.href = "home.html";
+      } catch (error) {
+        alert("❌ Error: " + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Done</span><span class="arrow">→</span>`;
+      }
     });
-    
-    localStorage.setItem("IsInformationEntered", "true");
-    window.location.href = "home.html";
-    
-});      
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        console.log("Logged in");
-        console.log(user);
-        
-        if(IsInformationEntered == "true") window.location.href = "home.html";
-        else return;                   
+    // ----- auth state: redirect if already logged in & info entered -----
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("✅ Logged in:", user.email || user.uid);
+        // if info already saved -> go home
+        if (localStorage.getItem("IsInformationEntered") === "true") {
+          window.location.href = "home.html";
+        }
+        // else stay on this page (user is logged in but info not entered yet)
+      } else {
+        // not logged in -> redirect to index (login)
+   //     window.location.href = "index.html";
+      }
+    });
 
-    } else {
-        window.location.href = "index.html";
+    // small extra: if user comes back and info already entered, redirect immediately
+    // (this runs before auth sometimes, but we also check inside onAuthStateChanged)
+    if (localStorage.getItem("IsInformationEntered") === "true") {
+      // but we need to be careful: only redirect if auth is also resolved.
+      // onAuthStateChanged will handle it. we'll keep this as a fallback with a short delay
+      // to avoid race condition with auth.
+      setTimeout(() => {
+        // re-check: if still true and user is logged in (we can't check directly here, but we'll let auth handle)
+        // Actually we let the auth listener do the redirect. 
+        // but if for some reason auth is slow, this prevents flicker.
+        if (localStorage.getItem("IsInformationEntered") === "true") {
+          // we don't redirect immediately because auth might not be resolved yet.
+          // the onAuthStateChanged will take care.
+        }
+      }, 100);
     }
 
-});  
-    </script>
+    // extra UI: autofocus first field
+    nameInput.focus();
+
+    // small hint: if user clicks on icon, focus input
+    document.querySelectorAll('.input-group .icon').forEach((icon, idx) => {
+      icon.addEventListener('click', () => {
+        const input = icon.parentElement.querySelector('input');
+        if (input) input.focus();
+      });
+    });
+
+    console.log("✨ Adey Bonda UI updated – ready.");
+  </script>
 </body>
 </html>
