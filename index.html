@@ -221,7 +221,8 @@
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();        
+const provider = new GoogleAuthProvider();      
+let IsInformationEntered = localStorage.getItem("IsInformationEntered");
 
 document.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
@@ -236,13 +237,13 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
 });
 
 onAuthStateChanged(auth, (user) => {
-
     if (user) {
         console.log("Logged in");
         console.log(user);
-
-        // Example
-        // location.href = "home.html";
+        
+        if(IsInformationEntered) window.location.href = "home.html";
+        else window.location.href = "insert information.html";
+                   
 
     } else {
         console.log("Not logged in");
