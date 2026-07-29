@@ -119,7 +119,7 @@
         }
 
         .btn-primary i {
-            color: #1a1f2f;
+            color: yellow;
         }
 
         .btn-primary:hover {
@@ -196,7 +196,7 @@
         </div>
 
         <!-- Google -->
-        <button class="btn-primary">
+        <button id="googleSignIn" class="btn-primary">
             <i class="fab fa-google"></i> Continue with Google
         </button>
 
@@ -206,5 +206,49 @@
             <span><i class="fas fa-shield-alt" style="margin-right: 4px;"></i> encrypted</span>
         </div>
     </div>
+    <script type="module">
+     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";       
+ const firebaseConfig = {
+  apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+  authDomain: "adey-bonda.firebaseapp.com",
+  projectId: "adey-bonda",
+  storageBucket: "adey-bonda.firebasestorage.app",
+  messagingSenderId: "820555835547",
+  appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();        
+
+document.getElementById("googleSignIn").addEventListener("click", async () => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log(user);
+        alert("Welcome " + user.displayName);
+    } catch (error) {
+        console.log(error);
+        alert(error.message);
+    }
+});
+
+onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+        console.log("Logged in");
+        console.log(user);
+
+        // Example
+        // location.href = "home.html";
+
+    } else {
+        console.log("Not logged in");
+    }
+
+});
+    </script>
 </body>
 </html>
