@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages · Adey Bonda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f4f7fc;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #eef5fb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        header h2 {
+            color: #0b2a3b;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header h2 i {
+            color: #1f7b9e;
+            font-size: 1.6rem;
+        }
+
+
+        /* Main chat area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f4f7fc;
+        }
+
+        /* Messages */
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.sent {
+            background: #1f7b9e;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            background: white;
+            color: #1d4058;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #e7eef6;
+        }
+
+        .message-text {
+            margin-bottom: 4px;
+        }
+
+        .message-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .message.sent .message-meta {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .message.received .message-meta {
+            color: #6f8fa8;
+        }
+
+        /* Empty state */
+        .empty-chat {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6f8fa8;
+            align-self: center;
+            margin: auto;
+        }
+
+        .empty-chat .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Input area */
+        .input-area {
+            background: white;
+            padding: 12px 20px;
+            border-top: 1px solid #eef5fb;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid #d6e1ed;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .input-area input:focus {
+            border-color: #1f7b9e;
+            box-shadow: 0 0 0 3px rgba(31,123,158,0.12);
+        }
+
+        .input-area button {
+            background: #1f7b9e;
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .input-area button:hover {
+            background: #14607e;
+            transform: scale(1.02);
+        }
+
+        .input-area button i {
+            font-size: 1rem;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+            border-top: 1px solid #eef5fb;
+            z-index: 100;
+        }
+
+        nav a {
+            color: #6f8fa8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a.current {
+            background: #1f7b9e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(31,123,158,0.25);
+        }
+
+        nav a:hover:not(.current) {
+            background: #f0f6fd;
+            color: #1f5a7a;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            header {
+                padding: 12px 16px;
+            }
+            header h2 {
+                font-size: 1.2rem;
+            }
+            .message {
+                max-width: 85%;
+                font-size: 0.9rem;
+            }
+            .input-area {
+                padding: 10px 16px;
+            }
+            .input-area input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            .input-area button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            nav a {
+                font-size: 0.8rem;
+                padding: 6px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2><i class="fas fa-comments"></i> Adey Bonda Messages</h2>
+    </header>
+
+    <main id="chatBox">
+        <div class="empty-chat">
+            <div class="empty-icon">💬</div>
+            <div>No messages yet</div>
+            <div style="font-size: 12px; margin-top: 8px;">Start the conversation</div>
+        </div>
+    </main>
+
+    <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendBtn"><i class="fas fa-paper-plane"></i> Send</button>
+    </div>
+
+    <nav>
+        <a href="home.html"><i class="fas fa-home"></i> Home</a>
+        <a href="Message.html" class="current"><i class="fas fa-comment-dots"></i> Message</a>
+        <a href="me.html"><i class="fas fa-user"></i> Me</a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+            authDomain: "adey-bonda.firebaseapp.com",
+            projectId: "adey-bonda",
+            storageBucket: "adey-bonda.firebasestorage.app",
+            messagingSenderId: "820555835547",
+            appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const userId = localStorage.getItem("userId") || "anonymous";        
+
+        const chatBox = document.getElementById('chatBox');
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        const messagesRef = ref(db, `AdeyBonda/messages/${userId}`);
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Listen for messages
+        function listenMessages() {
+            onValue(messagesRef, (snapshot) => {
+                const data = snapshot.val();
+                chatBox.innerHTML = "";
+
+                if (!data) {
+                    chatBox.innerHTML = `
+                        <div class="empty-chat">
+                            <div class="empty-icon">💬</div>
+                            <div>No messages yet</div>
+                            <div style="font-size: 12px; margin-top: 8px;">Start the conversation</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const messages = Object.entries(data)
+                    .map(([id, val]) => ({ id, ...val }))
+                    .sort((a, b) => a.time - b.time);
+
+                messages.forEach(msg => {
+                    const div = document.createElement("div");
+                    div.classList.add("message");
+
+                    const isMe = msg.from === userId;
+
+                    if (isMe) div.classList.add("sent");
+                    else div.classList.add("received");
+
+                    const time = new Date(msg.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    });
+
+                    // Auto mark as seen
+                    if (!isMe && !msg.seen) {
+                        update(ref(db, `AdeyBonda/messages/${userId}/${msg.id}`), {
+                            seen: true
+                        });
+                    }
+
+                    let seenMark = "";
+                    if (isMe) {
+                        seenMark = msg.seen ? "✔✔" : "✔";
+                    }
+
+                    div.innerHTML = `
+                        <div class="message-text">${escapeHtml(msg.message)}</div>
+                        <div class="message-meta">
+                            ${time} ${seenMark}
+                        </div>
+                    `;
+
+                    chatBox.appendChild(div);
+                });
+
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        // Send message
+        function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            push(messagesRef, {
+                from: userId,
+                to: "Bonda",
+                message: text,
+                time: Date.now(),
+                seen: false
+            });
+
+            input.value = "";
+            input.focus();
+        }
+
+        // Event listeners
+        sendBtn.addEventListener("click", sendMessage);
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        // Initialize
+        listenMessages();
+        
+        
+
+		const nav = document.querySelector("nav");
+		
+		let hideTimer;
+		nav.style.display = "none";
+		
+		function showNav() {
+		    nav.style.display = "flex";
+		
+		    clearTimeout(hideTimer);
+		
+		    hideTimer = setTimeout(() => {
+		        nav.style.display = "none";
+		    }, 3000);
+		}
+		
+		let startY = 0;
+		
+		document.addEventListener("touchstart", (e) => {
+		    startY = e.touches[0].clientY;
+		});
+		
+		document.addEventListener("touchend", (e) => {
+		    const endY = e.changedTouches[0].clientY;
+		
+		    // Started in the bottom 100px and swiped up at least 60px
+		    if (
+		        startY > window.innerHeight - 100 &&
+		        startY - endY > 60
+		    ) {
+		        showNav();
+		    }
+		});
+		
+		document.body.addEventListener('click', (e) => { if (e.target !== nav) nav.style.display = "none"; });
+		
+		showNav();
+        
+    </script>
+
+</body>
+</html>
