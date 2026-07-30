@@ -357,15 +357,18 @@
         document.head.appendChild(style);
       }
 
-      try {
-        await push(ref(database, "AdeyBonda/users/"), {
+     try {
+        const newUserRef = await push(ref(database, "AdeyBonda/users/"), {
           name: name,
           phoneNumber: tel,
           timestamp: Date.now()
         });
+        
+        const userId = newUserRef.key;
 
         alert("✅ Data saved successfully!");
         localStorage.setItem("IsInformationEntered", "true");
+        localStorage.setItem("userId", userId);
         window.location.href = "home.html";
       } catch (error) {
         alert("❌ Error: " + error.message);
