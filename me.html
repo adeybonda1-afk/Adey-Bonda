@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Me · Adey Bonda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f4f7fc;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: white;
+            padding: 20px 24px;
+            border-bottom: 1px solid #eef5fb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h2 {
+            color: #0b2a3b;
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header h2 i {
+            color: #1f7b9e;
+            font-size: 1.8rem;
+        }
+
+        .profile-section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 28px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+            border: 1px solid #e7eef6;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1f7b9e, #14607e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(31,123,158,0.2);
+        }
+
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0b2a3b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 20px 20px 24px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: white;
+            color: #1d4058;
+            border: 1px solid #d6e1ed;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+
+        .action-btn.edit {
+            background: #1f7b9e;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(31,123,158,0.2);
+        }
+
+        .action-btn.edit:hover {
+            background: #14607e;
+        }
+
+        .action-btn.settings {
+            background: #f0f6fd;
+            border: 1px solid #e2ecf5;
+        }
+
+        .action-btn.logout {
+            background: #fee8e8;
+            color: #c0392b;
+            border: 1px solid #fdd0d0;
+        }
+
+        .action-btn.logout:hover {
+            background: #fdd0d0;
+        }
+
+        .orders-section {
+            margin: 0 20px 24px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0b2a3b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #1f7b9e;
+        }
+
+        .order-card {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 20px;
+            border: 1px solid #e7eef6;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .order-card:hover {
+            border-color: #cbddee;
+            transform: translateX(4px);
+        }
+
+        .order-card.failed {
+            opacity: 0.5;
+            filter: grayscale(0.5);
+            background: #f5f5f5;
+        }
+
+        .order-card.failed .order-name {
+            color: #888;
+        }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .order-info-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .order-thumbnail {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #eaf1f9;
+            flex-shrink: 0;
+        }
+
+        .order-name {
+            font-weight: 600;
+            color: #0b2a3b;
+            font-size: 1rem;
+        }
+
+        .order-details {
+            font-size: 0.85rem;
+            color: #6f8fa8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 2px;
+        }
+
+        .order-details i {
+            color: #1f7b9e;
+            font-size: 0.75rem;
+        }
+
+        .order-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .order-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .order-status.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .order-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-time {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e67e22;
+            background: #fef9f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #fde4c8;
+            white-space: nowrap;
+        }
+
+        .order-time.urgent {
+            color: #c0392b;
+            background: #fee8e8;
+            border-color: #fdd0d0;
+        }
+
+        .order-time.failed-time {
+            color: #888;
+            background: #f0f0f0;
+            border-color: #ddd;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 20px;
+            border: 1px dashed #d6e1ed;
+            color: #6f8fa8;
+        }
+
+        .empty-orders i {
+            font-size: 2.5rem;
+            opacity: 0.4;
+            margin-bottom: 12px;
+        }
+
+        .location-section {
+            background: white;
+            margin: 0 20px 24px;
+            padding: 20px;
+            border-radius: 28px;
+            border: 1px solid #e7eef6;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+        }
+
+        .location-section .location-title {
+            font-weight: 600;
+            color: #0b2a3b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .location-section .location-title i {
+            color: #1f7b9e;
+        }
+
+        .location-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f6fd;
+            padding: 14px 18px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #1d4058;
+            transition: 0.2s;
+            border: 1px solid #e2ecf5;
+        }
+
+        .location-link:hover {
+            background: #e1edf7;
+            transform: translateX(4px);
+        }
+
+        .location-link i {
+            font-size: 1.5rem;
+            color: #1f7b9e;
+        }
+
+        .location-link .location-text {
+            flex: 1;
+        }
+
+        .location-link .location-text .main-text {
+            font-weight: 600;
+        }
+
+        .location-link .location-text .sub-text {
+            font-size: 0.85rem;
+            color: #6f8fa8;
+        }
+
+        .location-link .arrow {
+            color: #1f7b9e;
+            font-size: 1.2rem;
+        }
+
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+            border-top: 1px solid #eef5fb;
+            z-index: 100;
+        }
+
+        nav a {
+            color: #6f8fa8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a.current {
+            background: #1f7b9e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(31,123,158,0.25);
+        }
+
+        nav a:hover:not(.current) {
+            background: #f0f6fd;
+            color: #1f5a7a;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 16px;
+            }
+            header h2 {
+                font-size: 1.3rem;
+            }
+            .profile-section {
+                margin: 16px;
+                padding: 24px;
+            }
+            .action-buttons {
+                margin: 0 16px 20px;
+                flex-direction: column;
+            }
+            .action-btn {
+                min-width: auto;
+            }
+            .orders-section {
+                margin: 0 16px 20px;
+            }
+            .order-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .order-info-top {
+                width: 100%;
+            }
+            .order-time {
+                align-self: flex-start;
+            }
+            .location-section {
+                margin: 0 16px 20px;
+            }
+            nav a {
+                font-size: 0.8rem;
+                padding: 6px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2><i class="fas fa-user-circle"></i> Adey Bonda</h2>        
+    </header>
+
+    <div class="profile-section">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-name" id="userName"></div>        
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-btn edit"><i class="fas fa-edit"></i> Edit Profile</button>
+        <button class="action-btn settings"><i class="fas fa-cog"></i> Settings</button>
+        <button class="action-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <div class="orders-section">
+        <div class="section-title"><i class="fas fa-shopping-bag"></i> Your Orders</div>
+        <div id="ordersContainer">
+            <div class="empty-orders">
+                <i class="fas fa-box-open"></i>
+                <div>No orders yet</div>
+                <div style="font-size: 0.85rem; margin-top: 4px;">Start shopping to see your orders here</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="location-section">
+        <div class="location-title"><i class="fas fa-map-pin"></i> You know where you can find us</div>
+        <a href="https://goo.gl/maps/zNnnyxq3z9WfcNKo6" target="_blank" class="location-link">
+            <i class="fas fa-store"></i>
+            <div class="location-text">
+                <div class="main-text">📍 Adey Bonda Store</div>
+                <div class="sub-text">Open in Google Maps</div>
+            </div>
+            <i class="fas fa-arrow-right arrow"></i>
+        </a>
+    </div>
+
+    <nav>
+        <a href="home.html"><i class="fas fa-home"></i> Home</a>
+        <a href="Message.html"><i class="fas fa-comment-dots"></i> Message</a>
+        <a href="me.html" class="current"><i class="fas fa-user"></i> Me</a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+            authDomain: "adey-bonda.firebaseapp.com",
+            projectId: "adey-bonda",
+            storageBucket: "adey-bonda.firebasestorage.app",
+            messagingSenderId: "820555835547",
+            appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const ordersContainer = document.getElementById('ordersContainer');        
+
+        // Function to calculate time left
+        function getTimeLeft(timestamp) {
+            const now = Date.now();
+            const elapsed = now - timestamp;
+            const threeDays = 72 * 60 * 60 * 1000; // 72 hours in ms
+            const remaining = threeDays - elapsed;
+
+            if (remaining <= 0) {
+                return { text: 'Failed', failed: true };
+            }
+
+            const hours = Math.floor(remaining / (60 * 60 * 1000));
+            const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+
+            if (hours > 24) {
+                const days = Math.floor(hours / 24);
+                return { text: `${days}d left`, failed: false };
+            } else if (hours > 0) {
+                return { text: `${hours}h ${minutes}m left`, failed: false };
+            } else {
+                return { text: `${minutes}m left`, failed: false };
+            }
+        }
+
+        // Load orders
+        function loadOrders() {
+            const ordersRef = ref(db, `AdeyBonda/users/${userId}/orders`);
+            
+            onValue(ordersRef, async (snapshot) => {
+                const ordersData = snapshot.val();
+                
+                if (!ordersData) {
+                    ordersContainer.innerHTML = `
+                        <div class="empty-orders">
+                            <i class="fas fa-box-open"></i>
+                            <div>No orders yet</div>
+                            <div style="font-size: 0.85rem; margin-top: 4px;">Start shopping to see your orders here</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const orderIds = Object.keys(ordersData);
+                let html = '';
+
+                for (const orderId of orderIds) {
+                    const order = ordersData[orderId];
+                    const { productId, timestamp, status } = order;
+
+                    // Get product details
+                    try {
+                        const productRef = ref(db, `AdeyBonda/products/${productId}/productinformation`);
+                        const productSnap = await get(productRef);
+                        const product = productSnap.val();
+
+                        if (product) {
+                            const images = product.images ? product.images.split(',') : [];
+                            const firstImage = images.length > 0 ? images[0] : null;
+                            
+                            const timeInfo = getTimeLeft(timestamp);
+                            const isFailed = status === 'failed' || timeInfo.failed;
+                            const isPending = status === 'pending' || status === undefined;
+                            const isCompleted = status === 'completed';
+
+                            // Determine status class
+                            let statusClass = 'pending';
+                            let statusText = 'Pending';
+                            if (isFailed) {
+                                statusClass = 'failed';
+                                statusText = 'Failed';
+                            } else if (isCompleted) {
+                                statusClass = 'completed';
+                                statusText = 'Completed';
+                            }
+
+                            html += `
+                                <div class="order-card ${isFailed ? 'failed' : ''}">
+                                    <div class="order-info">
+                                        <div class="order-info-top">
+                                            ${firstImage ? 
+                                                `<img src="https://lh3.googleusercontent.com/d/${firstImage}" class="order-thumbnail" alt="${product.name}" />` :
+                                                `<div class="order-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#6f8fa8;"><i class="fas fa-box"></i></div>`
+                                            }
+                                            <div>
+                                                <div class="order-name">${product.name || 'Unnamed'}</div>
+                                                <div class="order-details">
+                                                    <span><i class="fas fa-tag"></i> ${product.type || 'N/A'}</span>
+                                                    <span><i class="fas fa-box"></i> Size ${product.size || 'N/A'}</span>
+                                                    <span><i class="fas fa-money-bill"></i> ${product.price || 0} ETB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display:flex;gap:8px;margin-top:4px;">
+                                            <span class="order-status ${statusClass}">${statusText}</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-time ${isFailed ? 'failed-time' : timeInfo.failed ? '' : timeInfo.text.includes('h') && parseInt(timeInfo.text) < 6 ? 'urgent' : ''}">
+                                        <i class="fas fa-clock"></i> ${isFailed ? 'Failed' : timeInfo.text}
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Product not found
+                            html += `
+                                <div class="order-card failed">
+                                    <div class="order-info">
+                                        <div class="order-name">Product unavailable</div>
+                                        <div class="order-details">
+                                            <span><i class="fas fa-exclamation-triangle"></i> Product may have been removed</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-time failed-time"><i class="fas fa-clock"></i> Failed</div>
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.error('Error loading product:', error);
+                    }
+                }
+
+                if (html) {
+                    ordersContainer.innerHTML = html;
+                } else {
+                    ordersContainer.innerHTML = `
+                        <div class="empty-orders">
+                            <i class="fas fa-box-open"></i>
+                            <div>No orders found</div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Load user info (optional)
+        function loadUserInfo() {
+            const userRef = ref(db, `AdeyBonda/users/${userId}`);
+            get(userRef).then((snapshot) => {
+                const userData = snapshot.val();
+                if (userData && userData.name) {
+                    document.getElementById('userName').textContent = userData.name;
+                }
+            }).catch(() => {});
+        }
+
+        // Initialize
+        loadUserInfo();
+        loadOrders();
+    </script>
+</body>
+</html>
