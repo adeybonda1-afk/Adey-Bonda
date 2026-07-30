@@ -1,72 +1,1012 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adey Bonda · Home</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ----- base & reset ----- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    /* header & search (unchanged) */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      gap: 15px;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0b2a3b;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header h1 i { color: #1f7b9e; font-size: 2rem; }
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 60px;
+      padding: 5px 5px 5px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,20,40,0.04);
+      flex: 1 1 300px;
+      max-width: 480px;
+      border: 1px solid #e2eaf1;
+      transition: 0.2s;
+      max-height: 50px;
+    }
+    .search-wrapper:focus-within {
+      border-color: #1f7b9e;
+      box-shadow: 0 0 0 4px rgba(31,123,158,0.15);
+    }
+    .search-wrapper i { color: #6f8fa8; font-size: 1rem; }
+    .search-wrapper input {
+      border: none;
+      padding: 14px 12px;
+      font-size: 1rem;
+      width: 100%;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-wrapper button {
+      background: #1f7b9e;
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .search-wrapper button:hover { background: #14607e; transform: scale(1.02); }
 
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
+    /* filter bar (unchanged) */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 18px;
+      background: white;
+      padding: 14px 24px;
+      border-radius: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      margin-bottom: 30px;
+      border: 1px solid #e2eaf1;
+    }
+    .filter-bar .filter-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0f6fd;
+      padding: 6px 16px 6px 14px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      color: #1d4b66;
+    }
+    .filter-bar .filter-tag i { color: #1f7b9e; font-size: 0.8rem; }
+    #filter-toggle-btn {
+      background: transparent;
+      border: 1px solid #d0deec;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 500;
+      color: #1f5a7a;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      margin-left: auto;
+    }
+    #filter-toggle-btn:hover { background: #e9f0f8; border-color: #1f7b9e; }
+    #filter-panel {
+      background: white;
+      border-radius: 28px;
+      padding: 28px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+      border: 1px solid #e2eaf1;
+      display: none;
+      transition: 0.2s;
+    }
+    #filter-panel.open { display: block; }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 24px 30px;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .filter-group label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #264e6b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-group label i { color: #4a7d9e; font-size: 0.8rem; }
+    .filter-group .radio-group {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      background: #f6faff;
+      padding: 8px 14px;
+      border-radius: 40px;
+      border: 1px solid #e2ecf5;
+    }
+    .filter-group .radio-group label {
+      text-transform: none;
+      font-weight: 400;
+      font-size: 0.9rem;
+      letter-spacing: 0;
+      gap: 6px;
+      color: #1d4058;
+      cursor: pointer;
+    }
+    .filter-group .radio-group input[type="radio"] {
+      accent-color: #1f7b9e;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+    .range-inputs {
+      display: flex;
+      gap: 10px;
+    }
+    .range-inputs input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d6e1ed;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      background: white;
+      transition: 0.15s;
+    }
+    .range-inputs input:focus {
+      border-color: #1f7b9e;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(31,123,158,0.12);
+    }
+    select {
+      padding: 10px 14px;
+      border: 1px solid #d6e1ed;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      background: white;
+      cursor: pointer;
+    }
+    select:focus {
+      border-color: #1f7b9e;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(31,123,158,0.12);
+    }
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 24px;
+      border-top: 1px solid #eef5fb;
+      padding-top: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-actions button {
+      padding: 10px 28px;
+      border-radius: 40px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #apply-filter-btn {
+      background: #1f7b9e;
+      color: white;
+      box-shadow: 0 4px 12px rgba(31,123,158,0.2);
+    }
+    #apply-filter-btn:hover { background: #14607e; transform: scale(1.01); }
+    #clear-filter-btn {
+      background: transparent;
+      color: #3f6b88;
+      border: 1px solid #d0deec;
+    }
+    #clear-filter-btn:hover { background: #f0f6fd; }
 
-        body{
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background:#f5f5f5;
-            font-family:Arial,sans-serif;
-        }
+    /* product grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 10px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 28px;
+      padding: 18px 16px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+      border: 1px solid #e7eef6;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.04);
+      border-color: #cbddee;
+    }
+    .product-card .image-container {
+      background: #eaf1f9;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-card .image-container img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .product-card .image-container .placeholder-icon {
+      font-size: 2.8rem;
+      color: #5f85a2;
+      padding: 30px;
+    }
+    .product-card .image-container .image-counter {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .product-card h4 {
+      font-weight: 600;
+      color: #0c2a3d;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+    .product-card .meta {
+      display: flex;
+      justify-content: space-between;
+      color: #3d6783;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+    .product-card .price {
+      font-weight: 700;
+      color: #1a5c7a;
+      font-size: 1.1rem;
+    }
+    .product-card .badge {
+      background: #e1edf7;
+      padding: 2px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      color: #1f5f7e;
+    }
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #3d6a89;
+      background: white;
+      border-radius: 40px;
+      border: 1px dashed #c6d9ea;
+    }
+    .empty-state i { font-size: 2.8rem; opacity: 0.5; margin-bottom: 12px; }
+    .loading-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #3d6a89;
+    }
+    .loading-state i {
+      font-size: 3rem;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        button{
-            padding:12px 30px;
-            font-size:16px;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-            background:#ff9315;
-            color:white;
-        }
+    /* ----- MODAL (absolute overlay) ----- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+      animation: fadeIn 0.2s;
+    }
+    .modal-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 
-        button:hover{
-            background:#e67f00;
-        }
-    </style>
+    .modal-card {
+      background: white;
+      max-width: 480px;
+      width: 100%;
+      border-radius: 40px;
+      padding: 28px 24px 30px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 10000;
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+    .modal-card .close-modal {
+      position: absolute;
+      top: 16px; right: 20px;
+      font-size: 1.8rem;
+      color: #5f7f9a;
+      cursor: pointer;
+      transition: 0.1s;
+      background: none;
+      border: none;
+    }
+    .modal-card .close-modal:hover { color: #1f3b4f; transform: scale(1.1); }
+
+    .modal-image-area {
+      position: relative;
+      background: #eaf1f9;
+      border-radius: 28px;
+      overflow: hidden;
+      min-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .modal-image-area img {
+      width: 100%;
+      height: 260px;
+      object-fit: contain;
+      background: #f0f6fd;
+      transition: 0.2s;
+    }
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.85);
+      border: none;
+      border-radius: 40px;
+      width: 40px; height: 40px;
+      font-size: 1.4rem;
+      color: #1f5a7a;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-nav:hover { background: white; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    .modal-nav.prev { left: 8px; }
+    .modal-nav.next { right: 8px; }
+    .modal-nav.hidden { display: none; }
+
+    .modal-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .modal-details .name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0b2a3b;
+    }
+    .modal-details .detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1rem;
+      color: #1d4058;
+      border-bottom: 1px solid #eef5fb;
+      padding: 4px 0;
+    }
+    .modal-details .detail-row span:first-child { font-weight: 500; color: #3f6b88; }
+    .modal-details .price-lg {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a5c7a;
+      margin: 6px 0 2px;
+    }
+    .modal-expire {
+      background: #fff6e5;
+      border-radius: 30px;
+      padding: 10px 16px;
+      margin: 12px 0 10px;
+      color: #a9671a;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #ffe1b3;
+    }
+    .modal-expire i { color: #d48c2b; }
+    .modal-location {
+      background: #e5f0fa;
+      border-radius: 30px;
+      padding: 10px 16px;
+      margin: 6px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #c5d9ed;
+    }
+    .modal-location a {
+      color: #1f6b8f;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-location a:hover { text-decoration: underline; }
+
+    .order-btn {
+      background: #1f7b9e;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 16px 20px;
+      border-radius: 60px;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(31,123,158,0.25);
+    }
+    .order-btn:hover { background: #14607e; transform: scale(1.01); }
+    .order-btn i { font-size: 1.2rem; }
+    
+nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+    border-top: 1px solid #eef5fb;
+    z-index: 100;
+}
+
+nav a {
+    color: #6f8fa8;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 30px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+nav a.current {
+    background: #1f7b9e;
+    color: white;
+    box-shadow: 0 4px 12px rgba(31,123,158,0.25);
+}
+
+nav a:hover:not(.current) {
+    background: #f0f6fd;
+    color: #1f5a7a;
+}
+
+    /* responsive */
+    @media (max-width: 640px) {
+      .header { flex-direction: column; align-items: stretch; }
+      .search-wrapper { max-width: 100%; }
+      .filter-bar { border-radius: 28px; padding: 12px 18px; }
+      #filter-toggle-btn { margin-left: 0; width: 100%; justify-content: center; }
+      .filter-grid { grid-template-columns: 1fr; }
+      .filter-actions { flex-direction: column; }
+      .filter-actions button { justify-content: center; }
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .modal-card { padding: 20px 16px; }
+    }
+  </style>
 </head>
 <body>
+<div class="app-container" id="appContainer">
+  <!-- header + search -->
+  <div class="header">
+    <h1><i class="fas fa-store-alt"></i> Adey Bonda</h1>
+    <div class="search-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search products..." />
+      <button id="searchBtn"><i class="fas fa-arrow-right"></i> Find</button>
+    </div>
+  </div>
 
-    <button id="logoutBtn">Logout</button>
+  <!-- filter bar (shortened) -->
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-tag"><i class="fas fa-sliders-h"></i> Active filters</span>
+    <span class="filter-tag" id="genderTag">👤 All</span>
+    <span class="filter-tag" id="brandTag">🏷️ All</span>
+    <span class="filter-tag" id="categoryTag">📂 All</span>
+    <span class="filter-tag" id="priceTag">💰 All</span>
+    <button id="filter-toggle-btn"><i class="fas fa-plus-circle"></i> <span id="filterToggleLabel">Show filters</span></button>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+  <!-- filter panel (unchanged) -->
+  <div id="filter-panel">
+    <div class="filter-grid">
+      <div class="filter-group">
+        <label><i class="fas fa-venus-mars"></i> Gender</label>
+        <div class="radio-group" id="genderGroup">
+          <label><input type="radio" name="gender" value="all" checked /> All</label>
+          <label><input type="radio" name="gender" value="Male" /> Male</label>
+          <label><input type="radio" name="gender" value="Female" /> Female</label>
+          <label><input type="radio" name="gender" value="Unisex" /> Unisex</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-ruler"></i> Size range</label>
+        <div class="range-inputs">
+          <input type="number" id="sizeFrom" placeholder="From" min="0" />
+          <input type="number" id="sizeTo" placeholder="To" min="0" />
+        </div>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-tag"></i> Brand</label>
+        <select id="brandSelect"><option value="">All Brands</option></select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-layer-group"></i> Category</label>
+        <select id="categorySelect">
+          <option value="">All Categories</option>
+          <option value="Shoes">Shoes</option>
+          <option value="T-Shirt">T-Shirt</option>
+          <option value="Coat">Coat</option>
+          <option value="Sweater">Sweater</option>
+          <option value="Pants">Pants</option>
+          <option value="Hat">Hat</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-dollar-sign"></i> Price (ETB)</label>
+        <div class="range-inputs">
+          <input type="number" id="priceFrom" placeholder="Min" min="0" />
+          <input type="number" id="priceTo" placeholder="Max" min="0" />
+        </div>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button id="clear-filter-btn"><i class="fas fa-undo-alt"></i> Clear all</button>
+      <button id="apply-filter-btn"><i class="fas fa-check"></i> Apply filters</button>
+    </div>
+  </div>
 
-	    const firebaseConfig = {
-	      apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
-	      authDomain: "adey-bonda.firebaseapp.com",
-	      projectId: "adey-bonda",
-	      storageBucket: "adey-bonda.firebasestorage.app",
-	      messagingSenderId: "820555835547",
-	      appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
-	    };
+  <!-- product grid -->
+  <div class="product-grid" id="productGrid">
+    <div class="loading-state"><i class="fas fa-spinner"></i><p>Loading products...</p></div>
+  </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+<!-- ======== MODAL (absolute overlay) ======== -->
+<div id="productModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <button class="close-modal" id="closeModalBtn">&times;</button>
+    <!-- image area with nav -->
+    <div class="modal-image-area" id="modalImageArea">
+      <img id="modalMainImage" src="" alt="product" />
+      <button class="modal-nav prev" id="modalPrevBtn"><i class="fas fa-chevron-left"></i></button>
+      <button class="modal-nav next" id="modalNextBtn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <!-- details -->
+    <div class="modal-details" id="modalDetails">
+      <div class="name" id="modalName">Product Name</div>
+      <div class="price-lg" id="modalPrice">0 ETB</div>
+      <div class="detail-row"><span>Brand</span><span id="modalBrand">—</span></div>
+      <div class="detail-row"><span>Category</span><span id="modalCategory">—</span></div>
+      <div class="detail-row"><span>Gender</span><span id="modalGender">—</span></div>
+      <div class="detail-row"><span>Size</span><span id="modalSize">—</span></div>
+      <div class="detail-row"><span>Stock</span><span id="modalStock">—</span></div>
+      <!-- expire warning -->
+      <div class="modal-expire"><i class="fas fa-clock"></i> ⏳ Order will expire if not picked up within 3 days.</div>
+      <!-- location -->
+      <div class="modal-location">
+        <i class="fas fa-map-pin" style="color:#1f7b9e; font-size:1.3rem;"></i>
+        <a href="https://goo.gl/maps/zNnnyxq3z9WfcNKo6" target="_blank"><i class="fas fa-external-link-alt"></i> 📍 Our location (Google Maps)</a>
+      </div>
+      <!-- order button -->
+      <button class="order-btn" id="modalOrderBtn"><i class="fas fa-shopping-bag"></i> Create order</button>
+    </div>
+  </div>
+</div>
 
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-            signOut(auth)
-            .then(() => {
-                localStorage.setItem("IsInformationEntered", "false");
-                window.location.href = "index.html";
-            })
-            .catch((error) => {
-                alert(error.message);
-            });
+    <nav>
+        <a href="home.html" class="current"><i class="fas fa-home"></i> Home</a>
+        <a href="Message.html"><i class="fas fa-comment-dots"></i> Message</a>
+        <a href="me.html"><i class="fas fa-user"></i> Me</a>
+    </nav>
+<script type="module">
+  // ----- Firebase imports -----
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+    authDomain: "adey-bonda.firebaseapp.com",
+    projectId: "adey-bonda",
+    storageBucket: "adey-bonda.firebasestorage.app",
+    messagingSenderId: "820555835547",
+    appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+  };
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // DOM refs
+  const productGrid = document.getElementById('productGrid');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+
+  // filter elements
+  const filterPanel = document.getElementById('filter-panel');
+  const filterToggleBtn = document.getElementById('filter-toggle-btn');
+  const filterToggleLabel = document.getElementById('filterToggleLabel');
+  const applyBtn = document.getElementById('apply-filter-btn');
+  const clearBtn = document.getElementById('clear-filter-btn');
+  const genderRadios = document.querySelectorAll('input[name="gender"]');
+  const sizeFrom = document.getElementById('sizeFrom');
+  const sizeTo = document.getElementById('sizeTo');
+  const brandSelect = document.getElementById('brandSelect');
+  const categorySelect = document.getElementById('categorySelect');
+  const priceFrom = document.getElementById('priceFrom');
+  const priceTo = document.getElementById('priceTo');
+  const genderTag = document.getElementById('genderTag');
+  const brandTag = document.getElementById('brandTag');
+  const categoryTag = document.getElementById('categoryTag');
+  const priceTag = document.getElementById('priceTag');
+
+  // modal elements
+  const modal = document.getElementById('productModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const modalMainImage = document.getElementById('modalMainImage');
+  const modalPrevBtn = document.getElementById('modalPrevBtn');
+  const modalNextBtn = document.getElementById('modalNextBtn');
+  const modalName = document.getElementById('modalName');
+  const modalPrice = document.getElementById('modalPrice');
+  const modalBrand = document.getElementById('modalBrand');
+  const modalCategory = document.getElementById('modalCategory');
+  const modalGender = document.getElementById('modalGender');
+  const modalSize = document.getElementById('modalSize');
+  const modalStock = document.getElementById('modalStock');
+  const modalOrderBtn = document.getElementById('modalOrderBtn');
+
+  // state
+  let allProducts = [];
+  let filteredProducts = [];
+  let currentFilters = {
+    gender: 'all',
+    sizeFrom: '',
+    sizeTo: '',
+    brand: '',
+    category: '',
+    priceFrom: '',
+    priceTo: '',
+  };
+  let searchQuery = '';
+  let currentModalProduct = null;        // product object
+  let currentImageIndex = 0;
+
+  // userId (from localStorage)
+  const userId = localStorage.getItem("userId") || "anonymous";
+
+  // ----- fetch products -----
+  function fetchProducts() {
+    const productsRef = ref(database, 'AdeyBonda/products');
+    onValue(productsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        allProducts = Object.keys(data).map(key => {
+          const productData = data[key].productinformation || data[key];
+          return {
+            id: key,
+            name: productData.name || 'Unnamed',
+            price: parseFloat(productData.price) || 0,
+            size: productData.size || 'N/A',
+            brand: productData.brand || 'Unbranded',
+            category: productData.type || 'Other',
+            gender: productData.gender || 'Unisex',
+            images: productData.images ? productData.images.split(',') : [],
+            quantity: productData.quantity || 1,
+            quantityType: productData.quantityType || 'one',
+          };
         });
-    </script>
+        populateBrands(allProducts);
+        applyFiltersAndRender();
+      } else {
+        allProducts = [];
+        productGrid.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><br>No products found</div>`;
+      }
+    }, (error) => {
+      console.error('Error:', error);
+      productGrid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading products.</div>`;
+    });
+  }
 
+  function populateBrands(products) {
+    const brands = new Set();
+    products.forEach(p => { if (p.brand && p.brand !== 'unbranded' && p.brand !== '') brands.add(p.brand); });
+    const currentVal = brandSelect.value;
+    brandSelect.innerHTML = '<option value="">All Brands</option>';
+    Array.from(brands).sort().forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b; opt.textContent = b;
+      brandSelect.appendChild(opt);
+    });
+    brandSelect.value = currentVal;
+  }
+
+  // filter & render
+  function filterProducts(products, filters, query) {
+    return products.filter(p => {
+      if (query) {
+        const q = query.toLowerCase();
+        if (!p.name.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
+      }
+      if (filters.gender && filters.gender !== 'all' && p.gender !== filters.gender) return false;
+      if (filters.sizeFrom !== '' || filters.sizeTo !== '') {
+        const sizeNum = parseFloat(p.size);
+        if (!isNaN(sizeNum)) {
+          const from = filters.sizeFrom !== '' ? parseFloat(filters.sizeFrom) : -Infinity;
+          const to = filters.sizeTo !== '' ? parseFloat(filters.sizeTo) : Infinity;
+          if (sizeNum < from || sizeNum > to) return false;
+        }
+      }
+      if (filters.brand && p.brand !== filters.brand) return false;
+      if (filters.category && p.category !== filters.category) return false;
+      if (filters.priceFrom !== '' || filters.priceTo !== '') {
+        const from = filters.priceFrom !== '' ? parseFloat(filters.priceFrom) : -Infinity;
+        const to = filters.priceTo !== '' ? parseFloat(filters.priceTo) : Infinity;
+        if (p.price < from || p.price > to) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderProducts(products) {
+    if (products.length === 0) {
+      productGrid.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><br>No products found</div>`;
+      return;
+    }
+    let html = '';
+    products.forEach((p, index) => {
+      const images = p.images || [];
+      const firstImage = images.length > 0 ? images[0] : null;
+      html += `
+        <div class="product-card" data-id="${p.id}" data-index="${index}">
+          <div class="image-container">
+            ${firstImage ? `<img src="https://lh3.googleusercontent.com/d/${firstImage}" alt="${p.name}" loading="lazy" />` :
+              `<div class="placeholder-icon"><i class="fas fa-${p.gender === 'Male' ? 'mars' : p.gender === 'Female' ? 'venus' : 'genderless'}"></i></div>`}
+            ${images.length > 1 ? `<span class="image-counter">${images.length} images</span>` : ''}
+          </div>
+          <h4>${p.name}</h4>
+          <div class="meta"><span>${p.brand}</span> <span class="badge">${p.category}</span></div>
+          <div class="meta"><span>Size: ${p.size}</span> <span class="price">${p.price} ETB</span></div>
+          <div style="font-size:0.7rem;color:#6f8fa8;margin-top:4px;">${p.quantityType === 'multiple' ? `📦 Stock: ${p.quantity}` : '🛒 One item'}</div>
+        </div>
+      `;
+    });
+    productGrid.innerHTML = html;
+  }
+
+  function updateFilterTags() {
+    const f = currentFilters;
+    genderTag.innerHTML = `👤 ${f.gender === 'all' ? 'All' : f.gender}`;
+    brandTag.innerHTML = `🏷️ ${f.brand || 'All'}`;
+    categoryTag.innerHTML = `📂 ${f.category || 'All'}`;
+    let priceText = 'All';
+    if (f.priceFrom !== '' && f.priceTo !== '') priceText = `${f.priceFrom} - ${f.priceTo}`;
+    else if (f.priceFrom !== '') priceText = `≥ ${f.priceFrom}`;
+    else if (f.priceTo !== '') priceText = `≤ ${f.priceTo}`;
+    priceTag.innerHTML = `💰 ${priceText}`;
+  }
+
+  function applyFiltersAndRender() {
+    const genderEl = document.querySelector('input[name="gender"]:checked');
+    const gender = genderEl ? genderEl.value : 'all';
+    currentFilters = {
+      gender,
+      sizeFrom: sizeFrom.value.trim(),
+      sizeTo: sizeTo.value.trim(),
+      brand: brandSelect.value,
+      category: categorySelect.value,
+      priceFrom: priceFrom.value.trim(),
+      priceTo: priceTo.value.trim(),
+    };
+    updateFilterTags();
+    filteredProducts = filterProducts(allProducts, currentFilters, searchQuery);
+    renderProducts(filteredProducts);
+    filterPanel.classList.remove('open');
+    filterToggleLabel.textContent = 'Show filters';
+  }
+
+  function clearFilters() {
+    document.querySelector('input[name="gender"][value="all"]').checked = true;
+    sizeFrom.value = ''; sizeTo.value = ''; brandSelect.value = ''; categorySelect.value = ''; priceFrom.value = ''; priceTo.value = '';
+    currentFilters = { gender: 'all', sizeFrom: '', sizeTo: '', brand: '', category: '', priceFrom: '', priceTo: '' };
+    updateFilterTags();
+    filteredProducts = filterProducts(allProducts, currentFilters, searchQuery);
+    renderProducts(filteredProducts);
+    filterPanel.classList.remove('open');
+    filterToggleLabel.textContent = 'Show filters';
+  }
+
+  // ----- Modal functions -----
+  function openModal(product) {
+    currentModalProduct = product;
+    currentImageIndex = 0;
+    updateModalImage();
+    // fill details
+    modalName.textContent = product.name;
+    modalPrice.textContent = `${product.price} ETB`;
+    modalBrand.textContent = product.brand;
+    modalCategory.textContent = product.category;
+    modalGender.textContent = product.gender;
+    modalSize.textContent = product.size;
+    modalStock.textContent = product.quantityType === 'multiple' ? `${product.quantity} units` : 'Single item';
+    modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    currentModalProduct = null;
+  }
+
+  function updateModalImage() {
+    const product = currentModalProduct;
+    if (!product) return;
+    const images = product.images || [];
+    if (images.length === 0) {
+      modalMainImage.src = ''; // fallback
+      modalMainImage.alt = 'No image';
+    } else {
+      const imgId = images[currentImageIndex];
+      modalMainImage.src = `https://lh3.googleusercontent.com/d/${imgId}`;
+      modalMainImage.alt = product.name;
+    }
+    // toggle nav buttons
+    if (images.length <= 1) {
+      modalPrevBtn.classList.add('hidden');
+      modalNextBtn.classList.add('hidden');
+    } else {
+      modalPrevBtn.classList.remove('hidden');
+      modalNextBtn.classList.remove('hidden');
+    }
+  }
+
+  // ----- Create order -----
+  async function createOrder(productId) {
+    if (!productId) return;
+    const orderRef = ref(database, `AdeyBonda/users/${userId}/orders`);
+    const newOrderRef = push(orderRef);
+    const orderData = {
+      productId: productId,
+      timestamp: Date.now(),
+      status: 'pending'     
+    };
+    try {
+      await set(newOrderRef, orderData);
+      alert('✅ Order created! It will expire if not picked up within 3 days.');
+      closeModal();
+    } catch (e) {
+      console.error('Order error:', e);
+      alert('❌ Failed to create order. Check console.');
+    }
+  }
+
+  // ----- Event listeners -----
+  // search
+  function performSearch() {
+    searchQuery = searchInput.value.trim();
+    filteredProducts = filterProducts(allProducts, currentFilters, searchQuery);
+    renderProducts(filteredProducts);
+  }
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+
+  filterToggleBtn.addEventListener('click', () => {
+    const isOpen = filterPanel.classList.toggle('open');
+    filterToggleLabel.textContent = isOpen ? 'Hide filters' : 'Show filters';
+  });
+  applyBtn.addEventListener('click', applyFiltersAndRender);
+  clearBtn.addEventListener('click', clearFilters);
+
+  // product card click (delegated)
+  productGrid.addEventListener('click', (e) => {
+    const card = e.target.closest('.product-card');
+    if (!card) return;
+    const productId = card.dataset.id;
+    const product = allProducts.find(p => p.id === productId);
+    if (product) openModal(product);
+  });
+
+  // modal close
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // modal nav
+  modalPrevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!currentModalProduct) return;
+    const images = currentModalProduct.images || [];
+    if (images.length === 0) return;
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    updateModalImage();
+  });
+  modalNextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!currentModalProduct) return;
+    const images = currentModalProduct.images || [];
+    if (images.length === 0) return;
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateModalImage();
+  });
+
+  // order button
+  modalOrderBtn.addEventListener('click', () => {
+    if (currentModalProduct) {
+      createOrder(currentModalProduct.id);
+    }
+  });
+
+  // init
+  fetchProducts();
+</script>
 </body>
 </html>
