@@ -439,7 +439,7 @@
     <div class="action-buttons">
         <button class="action-btn edit"><i class="fas fa-edit"></i> Edit Profile</button>
         <button class="action-btn settings"><i class="fas fa-cog"></i> Settings</button>
-        <button class="action-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button id="logoutBtn" class="action-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="orders-section">
@@ -621,6 +621,18 @@
                 }
             });
         }
+
+       document.getElementById("logoutBtn").addEventListener("click", () => {
+            signOut(auth)
+            .then(() => {
+                localStorage.setItem("IsInformationEntered", "false");
+                
+                window.location.href = "index.html";
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+        });
 
         // Load user info (optional)
         function loadUserInfo() {
