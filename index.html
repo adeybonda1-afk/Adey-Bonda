@@ -224,7 +224,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();      
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
 
-ddocument.getElementById("googleSignIn").addEventListener("click", async () => {
+document.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
