@@ -249,6 +249,8 @@ onAuthStateChanged(auth, (user) => {
 
         // Check if this is a new user
         const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+alert(user.metadata.creationTime, "....", user.metadata.lastSignInTime);
+alert(isNewUser);
 
         if (isNewUser) {
             // First time signing in
