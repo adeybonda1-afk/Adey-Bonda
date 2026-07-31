@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile · Adey Bonda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f4f7fc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px 40px;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            padding: 16px 20px;
+            margin: 0 -20px 24px;
+            border-bottom: 1px solid #eef5fb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #1f7b9e;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: 0.2s;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: #f0f6fd;
+            transform: scale(1.05);
+        }
+
+        header h2 {
+            color: #0b2a3b;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header h2 i {
+            color: #1f7b9e;
+            font-size: 1.6rem;
+        }
+
+        /* Main Card */
+        .edit-card {
+            background: white;
+            border-radius: 28px;
+            padding: 32px 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+            border: 1px solid #e7eef6;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1f7b9e, #14607e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(31,123,158,0.2);
+        }
+
+        .avatar-label {
+            color: #6f8fa8;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1d4058;
+            margin-bottom: 6px;
+        }
+
+        .form-group label i {
+            color: #1f7b9e;
+            margin-right: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d6e1ed;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: 0.2s;
+            background: #fafcfe;
+            color: #0b2a3b;
+        }
+
+        .form-group input:focus {
+            border-color: #1f7b9e;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(31,123,158,0.1);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: #a8bccf;
+        }
+
+        .change-btn {
+            width: 100%;
+            padding: 16px;
+            background: #1f7b9e;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(31,123,158,0.25);
+            margin-top: 8px;
+        }
+
+        .change-btn:hover {
+            background: #14607e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31,123,158,0.35);
+        }
+
+        .change-btn:active {
+            transform: translateY(0);
+        }
+
+        .change-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Error Display */
+        #error-displayer {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #fee8e8;
+            color: #c0392b;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #fdd0d0;
+        }
+
+        #error-displayer.show {
+            display: flex;
+        }
+
+        #error-displayer i {
+            font-size: 1.1rem;
+        }
+
+        /* Loader Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader-overlay.show {
+            display: flex;
+        }
+
+        .loader {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e7eef6;
+            border-top: 4px solid #1f7b9e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: #1d4058;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        /* Success Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4edda;
+            color: #155724;
+            padding: 16px 24px;
+            border-radius: 16px;
+            border: 1px solid #c3e6cb;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideDown 0.3s ease;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast i {
+            font-size: 1.4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            body {
+                padding: 0 16px 30px;
+            }
+            header {
+                padding: 12px 16px;
+                margin: 0 -16px 20px;
+            }
+            header h2 {
+                font-size: 1.2rem;
+            }
+            .edit-card {
+                padding: 24px 16px;
+            }
+            .avatar-circle {
+                width: 80px;
+                height: 80px;
+                font-size: 2.4rem;
+            }
+            .form-group input {
+                padding: 12px 14px;
+                font-size: 0.95rem;
+            }
+            .change-btn {
+                padding: 14px;
+                font-size: 1rem;
+            }
+            .toast {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+                padding: 14px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <button class="back-btn" onclick="window.location.href='me.html'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+    </header>
+
+    <!-- Edit Card -->
+    <div class="edit-card">
+        <div class="avatar-section">
+            <div class="avatar-circle">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="avatar-label">Update your profile</div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-user"></i> Full Name</label>
+            <input id="name" type="text" placeholder="Enter your full name" />
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-phone"></i> Phone Number</label>
+            <input id="tel" type="tel" placeholder="Enter your phone number" />
+        </div>
+
+        <button id="changeBtn" class="change-btn">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+
+        <div id="error-displayer">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-text"></span>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loaderOverlay" class="loader-overlay">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Saving changes...</div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span>Profile updated successfully!</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+            authDomain: "adey-bonda.firebaseapp.com",
+            projectId: "adey-bonda",
+            storageBucket: "adey-bonda.firebasestorage.app",
+            messagingSenderId: "820555835547",
+            appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const userId = localStorage.getItem("userId") || "anonymous";
+        const UserRef = ref(database, `AdeyBonda/users/${userId}`);
+
+        const nameInput = document.getElementById("name");
+        const telInput = document.getElementById("tel");
+        const changeBtn = document.getElementById("changeBtn");
+        const EDele = document.getElementById("error-displayer");
+        const errorText = document.getElementById("error-text");
+        const loaderOverlay = document.getElementById("loaderOverlay");
+        const toast = document.getElementById("toast");
+
+        // Show loader
+        function showLoader() {
+            loaderOverlay.classList.add("show");
+            changeBtn.disabled = true;
+        }
+
+        // Hide loader
+        function hideLoader() {
+            loaderOverlay.classList.remove("show");
+            changeBtn.disabled = false;
+        }
+
+        // Show error
+        function showError(message) {
+            errorText.textContent = message;
+            EDele.classList.add("show");
+            setTimeout(() => {
+                EDele.classList.remove("show");
+            }, 5000);
+        }
+
+        // Show toast
+        function showToast(message) {
+            toast.querySelector("span").textContent = message;
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        // Load user info
+        async function loadInformation() {
+            try {
+                showLoader();
+                const snapshot = await get(UserRef);
+                if (!snapshot.exists()) {
+                    showError("Profile not found");
+                    return;
+                }
+                const data = snapshot.val();
+                nameInput.value = data.name || "";
+                telInput.value = data.phoneNumber || "";
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Save changes
+        async function changeInformation() {
+            const name = nameInput.value.trim();
+            const phone = telInput.value.trim();
+
+            // Validation
+            if (!name) {
+                showError("Please enter your name");
+                nameInput.focus();
+                return;
+            }
+
+            if (!phone) {
+                showError("Please enter your phone number");
+                telInput.focus();
+                return;
+            }
+
+            if (phone.length < 10) {
+                showError("Please enter a valid phone number");
+                telInput.focus();
+                return;
+            }
+
+            try {
+                showLoader();
+                await update(UserRef, {
+                    name: name,
+                    phoneNumber: phone
+                });
+
+                showToast("Profile updated successfully!");
+
+                // Update the name on the page
+                const userNameDisplay = document.querySelector('.profile-name');
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = name;
+                }
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Event listeners
+        changeBtn.addEventListener("click", changeInformation);
+        changeBtn.addEventListener("touchstart", () => {
+            // Small touch feedback
+            changeBtn.style.transform = "scale(0.98)";
+            setTimeout(() => {
+                changeBtn.style.transform = "";
+            }, 150);
+        });
+
+        // Enter key support
+        document.addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && document.activeElement.tagName === "INPUT") {
+                changeInformation();
+            }
+        });
+
+        // Load on page load
+        loadInformation();
+    </script>
+</body>
+</html>
