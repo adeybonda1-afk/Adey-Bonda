@@ -326,6 +326,7 @@
 
     // ----- local flag -----
     let IsInformationEntered = localStorage.getItem("IsInformationEntered");
+    const userId = localStorage.getItem("userId") || "anonymous";
 
     // ----- form submit: save & redirect -----
     form.addEventListener("submit", async function(e) {
@@ -357,18 +358,16 @@
         document.head.appendChild(style);
       }
 
-     try {
-        const newUserRef = await push(ref(database, "AdeyBonda/users/"), {
+      try {
+        set(ref(database, `AdeyBonda/users/${userId}`), {
           name: name,
           phoneNumber: tel,
           timestamp: Date.now()
         });
-        
-        const userId = newUserRef.key;
+                
 
         alert("✅ Data saved successfully!");
         localStorage.setItem("IsInformationEntered", "true");
-        localStorage.setItem("userId", userId);
         window.location.href = "home.html";
       } catch (error) {
         alert("❌ Error: " + error.message);
