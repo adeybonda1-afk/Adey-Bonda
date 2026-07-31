@@ -224,12 +224,14 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();      
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
 
-document.getElementById("googleSignIn").addEventListener("click", async () => {
+ddocument.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
-        console.log(user);
-      
+
+        // Save user ID
+        localStorage.setItem("userId", user.uid);        
+
     } catch (error) {
         console.log(error);
         alert(error.message);
@@ -238,17 +240,29 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
+
         console.log("Logged in");
         console.log(user);
-        
-        if(IsInformationEntered == "true") window.location.href = "home.html";
-        else window.location.href = "insert information.html";
-                   
+
+        // Save the user's unique ID
+        localStorage.setItem("userId", user.uid);
+
+        // Check if this is a new user
+        const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+
+        if (isNewUser) {
+            // First time signing in
+            localStorage.setItem("IsInformationEntered", "false");
+            window.location.href = "insert information.html";
+        } else {
+            // Returning user
+            localStorage.setItem("IsInformationEntered", "true");
+            window.location.href = "home.html";
+        }
 
     } else {
         console.log("Not logged in");
     }
-
 });
     </script>
 </body>
