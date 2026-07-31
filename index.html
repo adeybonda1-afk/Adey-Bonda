@@ -253,10 +253,6 @@ const lastSignIn = new Date(user.metadata.lastSignInTime).getTime();
 
 const isNewUser = Math.abs(lastSignIn - creation) < 10000; // 10 seconds
 
-alert("Creation:", creation);
-alert("Last Sign In:", lastSignIn);
-alert("Difference:", lastSignIn - creation);
-alert("Is New User:", isNewUser);    
 
         if (isNewUser) {
             // First time signing in
