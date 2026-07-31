@@ -223,13 +223,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();      
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
-let isNewUser;
 
 document.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
         const result = await signInWithPopup(auth, provider);
- isNewUser = result._tokenResponse.isNewUser;
-alert(isNewUser);
         const user = result.user;
 
         // Save user ID
@@ -250,7 +247,16 @@ onAuthStateChanged(auth, (user) => {
         // Save the user's unique ID
         localStorage.setItem("userId", user.uid);
 
-        // Check if this is a new user        
+        // Check if this is a new user    
+const creation = new Date(user.metadata.creationTime).getTime();
+const lastSignIn = new Date(user.metadata.lastSignInTime).getTime();
+
+const isNewUser = Math.abs(lastSignIn - creation) < 10000; // 10 seconds
+
+console.log("Creation:", creation);
+console.log("Last Sign In:", lastSignIn);
+console.log("Difference:", lastSignIn - creation);
+console.log("Is New User:", isNewUser);    
 
         if (isNewUser) {
             // First time signing in
