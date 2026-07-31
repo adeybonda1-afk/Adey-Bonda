@@ -359,7 +359,7 @@
       }
 
       try {
-        set(ref(database, `AdeyBonda/users/${userId}`), {
+        await set(ref(database, `AdeyBonda/users/${userId}`), {
           name: name,
           phoneNumber: tel,
           timestamp: Date.now()
