@@ -12,7 +12,7 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f4f7fc;
-      padding: 30px 20px;
+      padding: 20px 20px 70px 20px;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -506,6 +506,17 @@
     .order-btn:hover { background: #14607e; transform: scale(1.01); }
     .order-btn i { font-size: 1.2rem; }
     
+    #quantityInput{
+        display: inline-flex;
+        width: 60px;
+        margin-left: 30px;
+        height: 20px;
+        padding: 3px;
+        border-radius: 5px;
+    }    
+    
+    label{color: #1d4058;;}
+    
 nav {
     position: fixed;
     bottom: 0;
@@ -655,6 +666,10 @@ nav a:hover:not(.current) {
       <div class="detail-row"><span>Gender</span><span id="modalGender">—</span></div>
       <div class="detail-row"><span>Size</span><span id="modalSize">—</span></div>
       <div class="detail-row"><span>Stock</span><span id="modalStock">—</span></div>
+      
+     <div id="modalQuantity">
+         <label>Enter How much do you want:</label> <input min="1" id="quantityInput" type="number" value="1">
+     </div>
       <!-- expire warning -->
       <div class="modal-expire"><i class="fas fa-clock"></i> ⏳ Order will expire if not picked up within 3 days.</div>
       <!-- location -->
@@ -726,6 +741,9 @@ nav a:hover:not(.current) {
   const modalSize = document.getElementById('modalSize');
   const modalStock = document.getElementById('modalStock');
   const modalOrderBtn = document.getElementById('modalOrderBtn');
+  const modalQuantityInput = document.getElementById('quantityInput');
+  const modalQuantity = document.getElementById('modalQuantity');
+  
 
   // state
   let allProducts = [];
@@ -754,7 +772,7 @@ nav a:hover:not(.current) {
       if (data) {
         allProducts = Object.keys(data).map(key => {
           const productData = data[key].productinformation || data[key];
-          return {
+         return {
             id: key,
             name: productData.name || 'Unnamed',
             price: parseFloat(productData.price) || 0,
@@ -900,6 +918,7 @@ nav a:hover:not(.current) {
     modalGender.textContent = product.gender;
     modalSize.textContent = product.size;
     modalStock.textContent = product.quantityType === 'multiple' ? `${product.quantity} units` : 'Single item';
+    modalQuantity.style.display = product.quantityType === 'multiple' ? 'inline-flex': 'none';
     modal.classList.remove('hidden');
   }
 
@@ -931,16 +950,22 @@ nav a:hover:not(.current) {
   }
 
   // ----- Create order -----
-  async function createOrder(productId) {
-    if (!productId) return;
+  async function createOrder(product) {
+    if (!product.id) return;    
+    if (Number(modalQuantityInput.value) > Number(product.quantity)){
+        alert(`you Enterd greater than maximum number of Quantity you can enter upto:  ${product.quantity}`)
+        return;
+    } 
     const orderRef = ref(database, `AdeyBonda/users/${userId}/orders`);
     const newOrderRef = push(orderRef);
     const orderData = {
-      productId: productId,
+      productId: product.id,
       timestamp: Date.now(),
+      HowMany: modalQuantityInput.value,
       status: 'pending'     
     };
-    try {
+   
+   try {
       await set(newOrderRef, orderData);
       alert('✅ Order created! It will expire if not picked up within 3 days.');
       closeModal();
@@ -948,6 +973,7 @@ nav a:hover:not(.current) {
       console.error('Order error:', e);
       alert('❌ Failed to create order. Check console.');
     }
+    
   }
 
   // ----- Event listeners -----
@@ -1000,8 +1026,8 @@ nav a:hover:not(.current) {
 
   // order button
   modalOrderBtn.addEventListener('click', () => {
-    if (currentModalProduct) {
-      createOrder(currentModalProduct.id);
+    if (currentModalProduct) {        
+      createOrder(currentModalProduct);
     }
   });
 
