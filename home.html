@@ -950,14 +950,16 @@ nav a:hover:not(.current) {
   }
 
   // ----- Create order -----
-  async function createOrder(product) {
+ async function createOrder(product) {
     if (!product.id) return;    
     if (Number(modalQuantityInput.value) > Number(product.quantity)){
         alert(`you Enterd greater than maximum number of Quantity you can enter upto:  ${product.quantity}`)
         return;
     } 
     const orderRef = ref(database, `AdeyBonda/users/${userId}/orders`);
+    const orderRefB = ref(database, `AdeyBonda/pending orders`);
     const newOrderRef = push(orderRef);
+    const newOrderRefB = push(orderRefB);
     const orderData = {
       productId: product.id,
       timestamp: Date.now(),
@@ -967,6 +969,7 @@ nav a:hover:not(.current) {
    
    try {
       await set(newOrderRef, orderData);
+      await set(newOrderRefB, orderData);
       alert('✅ Order created! It will expire if not picked up within 3 days.');
       closeModal();
     } catch (e) {
