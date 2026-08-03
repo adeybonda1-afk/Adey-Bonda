@@ -952,10 +952,17 @@ nav a:hover:not(.current) {
   // ----- Create order -----
   async function createOrder(product) {
     if (!product.id) return;    
-    if (Number(modalQuantityInput.value) > Number(product.quantity)){
-        alert(`you Enterd greater than maximum number of Quantity you can enter upto:  ${product.quantity}`)
-        return;
-    } 
+		const qty = Number(modalQuantityInput.value);
+		
+		if (!Number.isInteger(qty) || qty < 1) {
+		    alert("Enter a valid quantity.");
+		    return;
+		}
+		
+		if (qty > Number(product.quantity)) {
+		    alert("Not enough stock.");
+		    return;
+		}
     
  		const requestedQuantity = Number(modalQuantityInput.value);		
 		const quantityRef = ref(
