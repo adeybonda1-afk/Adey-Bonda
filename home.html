@@ -691,7 +691,7 @@ nav a:hover:not(.current) {
 <script type="module">
   // ----- Firebase imports -----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
@@ -950,12 +950,32 @@ nav a:hover:not(.current) {
   }
 
   // ----- Create order -----
- async function createOrder(product) {
+  async function createOrder(product) {
     if (!product.id) return;    
     if (Number(modalQuantityInput.value) > Number(product.quantity)){
         alert(`you Enterd greater than maximum number of Quantity you can enter upto:  ${product.quantity}`)
         return;
     } 
+    
+ 		const requestedQuantity = Number(modalQuantityInput.value);		
+		const quantityRef = ref(
+		    database,
+		    `AdeyBonda/products/${product.id}/productinformation/quantity`
+		);
+		
+		const transactionResult = await runTransaction(quantityRef, (currentQuantity) => {		
+		    if (currentQuantity === null) return;		
+		    if (currentQuantity < requestedQuantity) {
+		        return;
+		    }		
+		    return currentQuantity - requestedQuantity;		
+		});
+		
+		if (!transactionResult.committed) {
+		    alert("Sorry, this product is out of stock.");
+		    return;
+		}
+    
     const orderRef = ref(database, `AdeyBonda/users/${userId}/orders`);
     const orderRefB = ref(database, `AdeyBonda/pending orders`);
     const newOrderRef = push(orderRef);
