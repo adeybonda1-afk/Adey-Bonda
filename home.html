@@ -962,6 +962,7 @@ nav a:hover:not(.current) {
     const newOrderRefB = push(orderRefB);
     const orderData = {
       productId: product.id,
+      userId: userId,
       timestamp: Date.now(),
       HowMany: modalQuantityInput.value,
       status: 'pending'     
