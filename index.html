@@ -198,7 +198,7 @@
 
         <!-- Google -->
         <button id="googleSignIn" class="btn-primary">
-            <i class="fab fa-google"></i> Continue with Google
+            <i class="fab fa-google"></i> Continue with Google ug
         </button>
 
         <!-- subtle extra: small hint -->
@@ -247,6 +247,7 @@ onAuthStateChanged(auth, (user) => {
         if(iscreatingAcc == false){
              localStorage.setItem("IsInformationEntered", "true");
              window.location.href = "home.html";
+return;
         }
 
         // Save the user's unique ID
