@@ -224,6 +224,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();      
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
+let iscreatingAcc = false;
 
 document.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
@@ -231,6 +232,7 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
         const user = result.user;
 
         // Save user ID
+        iscreatingAcc = true;
         localStorage.setItem("userId", user.uid);        
 
     } catch (error) {
@@ -242,8 +244,10 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
 
-        console.log("Logged in");
-        console.log(user);
+        if(iscreatingAcc == false){
+             localStorage.setItem("IsInformationEntered", "true");
+             window.location.href = "home.html";
+        }
 
         // Save the user's unique ID
         localStorage.setItem("userId", user.uid);
