@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat · Adey Bonda</title>
+    <title>Messages · Adey Bonda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * {
@@ -23,7 +23,7 @@
         /* Header */
         header {
             background: white;
-            padding: 12px 16px;
+            padding: 16px 24px;
             border-bottom: 1px solid #eef5fb;
             display: flex;
             align-items: center;
@@ -31,61 +31,20 @@
             flex-shrink: 0;
         }
 
-        .back-btn {
-            background: none;
-            border: none;
-            color: #1f7b9e;
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 30px;
-            transition: 0.2s;
-        }
-
-        .back-btn:hover {
-            background: #f0f6fd;
-        }
-
-        .user-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1f7b9e, #14607e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
+        header h2 {
             color: #0b2a3b;
-            font-size: 1rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .user-status {
-            font-size: 0.75rem;
-            color: #6f8fa8;
+        header h2 i {
+            color: #1f7b9e;
+            font-size: 1.6rem;
         }
 
-        .user-status.online {
-            color: #27ae60;
-        }
 
         /* Main chat area */
         main {
@@ -224,13 +183,52 @@
             font-size: 1rem;
         }
 
+        /* Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+            border-top: 1px solid #eef5fb;
+            z-index: 100;
+        }
+
+        nav a {
+            color: #6f8fa8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a.current {
+            background: #1f7b9e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(31,123,158,0.25);
+        }
+
+        nav a:hover:not(.current) {
+            background: #f0f6fd;
+            color: #1f5a7a;
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
             header {
-                padding: 10px 12px;
+                padding: 12px 16px;
             }
-            .user-name {
-                font-size: 0.95rem;
+            header h2 {
+                font-size: 1.2rem;
             }
             .message {
                 max-width: 85%;
@@ -247,23 +245,17 @@
                 padding: 10px 16px;
                 font-size: 0.85rem;
             }
-            
+            nav a {
+                font-size: 0.8rem;
+                padding: 6px 14px;
+            }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <button class="back-btn" onclick="window.location.href='message.html'">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <div class="user-info">
-            <div class="user-avatar" id="userAvatar">?</div>
-            <div class="user-details">
-                <div class="user-name" id="userName">Loading...</div>
-                <div class="user-status" id="userStatus">Online</div>
-            </div>
-        </div>
+        <h2><i class="fas fa-comments"></i> Adey Bonda Messages</h2>
     </header>
 
     <main id="chatBox">
@@ -279,9 +271,15 @@
         <button id="sendBtn"><i class="fas fa-paper-plane"></i> Send</button>
     </div>
 
+    <nav>
+        <a href="home.html"><i class="fas fa-home"></i> Home</a>
+        <a href="Message.html" class="current"><i class="fas fa-comment-dots"></i> Message</a>
+        <a href="me.html"><i class="fas fa-user"></i> Me</a>
+    </nav>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, update, set} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
@@ -295,43 +293,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Get userId from sessionStorage (set by message page)
-        const userId = sessionStorage.getItem('chatUserId') || localStorage.getItem("userId") || "anonymous";
-        const ownerId = "Bonda"; // Owner identifier
+        const userId = localStorage.getItem("userId") || "anonymous";        
 
         const chatBox = document.getElementById('chatBox');
         const input = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
-        const userNameEl = document.getElementById('userName');
-        const userAvatarEl = document.getElementById('userAvatar');
-        const userStatusEl = document.getElementById('userStatus');
 
-        // Messages reference for this user
         const messagesRef = ref(db, `AdeyBonda/messages/${userId}`);
-
-        // Load user info
-        async function loadUserInfo() {
-            try {
-                const userRef = ref(db, `AdeyBonda/users/${userId}`);
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    const name = data.name || 'Unknown User';
-                    userNameEl.textContent = name;
-                    userAvatarEl.textContent = name.charAt(0).toUpperCase() || '?';
-                    userStatusEl.textContent = 'Online';
-                    userStatusEl.classList.add('online');
-                } else {
-                    userNameEl.textContent = 'Unknown User';
-                    userAvatarEl.textContent = '?';
-                    userStatusEl.textContent = 'Offline';
-                }
-            } catch (error) {
-                console.error('Error loading user info:', error);
-                userNameEl.textContent = 'User';
-                userAvatarEl.textContent = '?';
-            }
-        }
 
         // Escape HTML
         function escapeHtml(text) {
@@ -357,29 +325,16 @@
                     return;
                 }
 
-					const messages = Object.entries(data)
-					    .filter(([id]) => id !== "lastMessage")
-					    .map(([id, val]) => ({ id, ...val }))
-					    .filter(msg => msg.message !== undefined && msg.message !== null)
-					    .sort((a, b) => a.time - b.time);
-
-                if (messages.length === 0) {
-                    chatBox.innerHTML = `
-                        <div class="empty-chat">
-                            <div class="empty-icon">💬</div>
-                            <div>No messages yet</div>
-                            <div style="font-size: 12px; margin-top: 8px;">Start the conversation</div>
-                        </div>
-                    `;
-                    return;
-                }
+                const messages = Object.entries(data)
+                    .filter(([id]) => id !== "lastMessage")
+                    .map(([id, val]) => ({ id, ...val }))
+                    .sort((a, b) => a.time - b.time);
 
                 messages.forEach(msg => {
                     const div = document.createElement("div");
                     div.classList.add("message");
 
-                    // Owner sends messages (from = "Bonda")
-                    const isMe = msg.from === ownerId;
+                    const isMe = msg.from === userId;
 
                     if (isMe) div.classList.add("sent");
                     else div.classList.add("received");
@@ -389,14 +344,9 @@
                         minute: "2-digit"
                     });
 
-                    // Auto mark as seen (if message is from user and not seen)
+                    // Auto mark as seen
                     if (!isMe && !msg.seen) {
                         update(ref(db, `AdeyBonda/messages/${userId}/${msg.id}`), {
-                            seen: true
-                        });
-                        
-                        // Update lastMessage seen status
-                        update(ref(db, `AdeyBonda/messages/${userId}/lastMessage`), {
                             seen: true
                         });
                     }
@@ -420,28 +370,25 @@
             });
         }
 
-        // Send message (as Owner)
+        // Send message
         function sendMessage() {
             const text = input.value.trim();
             if (!text) return;
 
-            // Send as Owner (Bonda)
             push(messagesRef, {
-                from: ownerId,
-                to: userId,
+                from: userId,
+                to: "Bonda",
                 message: text,
                 time: Date.now(),
                 seen: false
             });
             
-            // Update last message
             set(ref(db, `AdeyBonda/messages/${userId}/lastMessage`), {
-                from: ownerId,
-                to: userId,
+                from: userId,
+                to: "Bonda",
                 message: text,
-                time: Date.now(),
-                seen: false
-            });
+                time: Date.now()                
+            })
 
             input.value = "";
             input.focus();
@@ -454,10 +401,49 @@
         });
 
         // Initialize
-        loadUserInfo();
         listenMessages();
+        
+        
 
-
+		const nav = document.querySelector("nav");
+		
+		let hideTimer;
+		nav.style.display = "none";
+		
+		function showNav() {
+		    nav.style.display = "flex";
+		
+		    clearTimeout(hideTimer);
+		
+		    hideTimer = setTimeout(() => {
+		        nav.style.display = "none";
+		    }, 3000);
+		}
+		
+		let startY = 0;
+		
+		document.addEventListener("touchstart", (e) => {
+		    startY = e.touches[0].clientY;
+		});
+		
+		document.addEventListener("touchend", (e) => {
+		    const endY = e.changedTouches[0].clientY;
+		
+		    // Started in the bottom 100px and swiped up at least 60px
+		    if (
+		        startY > window.innerHeight - 100 &&
+		        startY - endY > 60
+		    ) {
+		        showNav();
+		    }
+		});
+		
+		document.body.addEventListener('click', (e) => { if (e.target !== nav) nav.style.display = "none"; });
+		
+		showNav();
+        
     </script>
+
 </body>
 </html>
+
