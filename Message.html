@@ -326,6 +326,7 @@
                 }
 
                 const messages = Object.entries(data)
+                    .filter(([id]) => id !== "lastMessage")
                     .map(([id, val]) => ({ id, ...val }))
                     .sort((a, b) => a.time - b.time);
 
