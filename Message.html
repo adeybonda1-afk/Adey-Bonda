@@ -279,7 +279,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, update, set} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
@@ -381,6 +381,13 @@
                 time: Date.now(),
                 seen: false
             });
+            
+            set(ref(db, `AdeyBonda/messages/${userId}/lastMessage`), {
+                from: userId,
+                to: "Bonda",
+                message: text,
+                time: Date.now()                
+            })
 
             input.value = "";
             input.focus();
@@ -438,3 +445,4 @@
 
 </body>
 </html>
+
