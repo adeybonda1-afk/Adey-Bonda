@@ -505,7 +505,7 @@
     }
     .order-btn:hover { background: #14607e; transform: scale(1.01); }
     .order-btn i { font-size: 1.2rem; }
-    
+
     #quantityInput{
         display: inline-flex;
         width: 60px;
@@ -514,9 +514,9 @@
         padding: 3px;
         border-radius: 5px;
     }    
-    
+
     label{color: #1d4058;;}
-    
+
 nav {
     position: fixed;
     bottom: 0;
@@ -666,7 +666,7 @@ nav a:hover:not(.current) {
       <div class="detail-row"><span>Gender</span><span id="modalGender">—</span></div>
       <div class="detail-row"><span>Size</span><span id="modalSize">—</span></div>
       <div class="detail-row"><span>Stock</span><span id="modalStock">—</span></div>
-      
+
      <div id="modalQuantity">
          <label>Enter How much do you want:</label> <input min="1" id="quantityInput" type="number" value="1">
      </div>
@@ -691,7 +691,7 @@ nav a:hover:not(.current) {
 <script type="module">
   // ----- Firebase imports -----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  import { getDatabase, ref, onValue, get, push, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
@@ -743,7 +743,7 @@ nav a:hover:not(.current) {
   const modalOrderBtn = document.getElementById('modalOrderBtn');
   const modalQuantityInput = document.getElementById('quantityInput');
   const modalQuantity = document.getElementById('modalQuantity');
-  
+
 
   // state
   let allProducts = [];
@@ -950,62 +950,185 @@ nav a:hover:not(.current) {
   }
 
   // ----- Create order -----
-  async function createOrder(product) {
-    if (!product.id) return;    
-		const qty = Number(modalQuantityInput.value);
-		
-		if (!Number.isInteger(qty) || qty < 1) {
-		    alert("Enter a valid quantity.");
-		    return;
-		}
-		
-		if (qty > Number(product.quantity)) {
-		    alert("Not enough stock.");
-		    return;
-		}
-    
- 		const requestedQuantity = Number(modalQuantityInput.value);		
-		const quantityRef = ref(
-		    database,
-		    `AdeyBonda/products/${product.id}/productinformation/quantity`
-		);
-		
-		const transactionResult = await runTransaction(quantityRef, (currentQuantity) => {		
-		    if (currentQuantity === null) return;		
-		    if (currentQuantity < requestedQuantity) {
-		        return;
-		    }		
-		    return currentQuantity - requestedQuantity;		
-		});
-		
-		if (!transactionResult.committed) {
-		    alert("Sorry, this product is out of stock.");
-		    return;
-		}
-    
-    const orderRef = ref(database, `AdeyBonda/users/${userId}/orders`);
-    const orderRefB = ref(database, `AdeyBonda/pending orders`);
-    const newOrderRef = push(orderRef);
-    const newOrderRefB = push(orderRefB);
-    const orderData = {
-      productId: product.id,
-      userId: userId,
-      timestamp: Date.now(),
-      HowMany: modalQuantityInput.value,
-      status: 'pending'     
-    };
-   
-   try {
-      await set(newOrderRef, orderData);
-      await set(newOrderRefB, orderData);
-      alert('✅ Order created! It will expire if not picked up within 3 days.');
-      closeModal();
-    } catch (e) {
-      console.error('Order error:', e);
-      alert('❌ Failed to create order. Check console.');
+async function createOrder(product) {
+    if (!product?.id) {
+        alert("Invalid product.");
+        return;
     }
-    
-  }
+
+    const productId = product.id;
+    const requestedQuantity = Number(modalQuantityInput.value);
+
+    // 1. Validate requested quantity
+    if (!Number.isInteger(requestedQuantity) || requestedQuantity < 1) {
+        alert("Enter a valid quantity.");
+        return;
+    }
+
+    const productInfoPath =
+        `AdeyBonda/products/${productId}/productinformation`;
+
+    const productRef = ref(
+        database,
+        `AdeyBonda/products/${productId}`
+    );
+
+    const quantityRef = ref(
+        database,
+        `${productInfoPath}/quantity`
+    );
+
+    try {
+        // ---------------------------------------------------------
+        // 2. Get the latest product information from Firebase
+        // ---------------------------------------------------------
+        const productSnapshot = await get(
+            ref(database, productInfoPath)
+        );
+
+        if (!productSnapshot.exists()) {
+            alert("❌ This product is no longer available.");
+            return;
+        }
+
+        // Make a complete copy of productInformation
+        // This will be stored inside the order.
+        const productInformation = {
+            ...productSnapshot.val(),
+            productId: productId
+        };
+
+        // ---------------------------------------------------------
+        // 3. Atomically decrease quantity
+        // ---------------------------------------------------------
+        const transactionResult = await runTransaction(
+            quantityRef,
+            (currentQuantity) => {
+
+                if (currentQuantity === null) {
+                    return;
+                }
+
+                const currentQty = Number(currentQuantity);
+
+                // Check latest Firebase quantity,
+                // NOT the old product.quantity
+                if (
+                    !Number.isInteger(currentQty) ||
+                    currentQty < requestedQuantity
+                ) {
+                    return;
+                }
+
+                const newQuantity =
+                    currentQty - requestedQuantity;
+
+                return newQuantity;
+            }
+        );
+
+        // Another customer may have taken the stock first.
+        if (!transactionResult.committed) {
+            alert("❌ Sorry, there is not enough stock available.");
+            return;
+        }
+
+        // This is the REAL quantity after our transaction.
+        const newQuantity = Number(
+            transactionResult.snapshot.val()
+        );
+
+        // ---------------------------------------------------------
+        // 4. Update quantityType / remove product
+        // ---------------------------------------------------------
+
+        if (newQuantity === 0) {
+
+            // Quantity reached zero.
+            // Remove the entire product.
+            await remove(productRef);
+
+        } else if (newQuantity === 1) {
+
+            // Only one item remains.
+            await set(
+                ref(
+                    database,
+                    `${productInfoPath}/quantityType`
+                ),
+                "one"
+            );
+
+        }
+
+        // ---------------------------------------------------------
+        // 5. Prepare order information
+        // ---------------------------------------------------------
+
+        // Keep the original product information as a snapshot.
+        // Update the snapshot so it represents what was left
+        // after this order.
+        productInformation.quantity = newQuantity;
+
+        if (newQuantity === 1) {
+            productInformation.quantityType = "one";
+        }
+
+        const orderData = {
+            productInformation: productInformation,
+
+            userId: userId,
+
+            timestamp: Date.now(),
+
+            HowMany: requestedQuantity,
+
+            status: "pending"
+        };
+
+        // ---------------------------------------------------------
+        // 6. Create order in both locations
+        // ---------------------------------------------------------
+
+        const customerOrdersRef = ref(
+            database,
+            `AdeyBonda/users/${userId}/orders`
+        );
+
+        const pendingOrdersRef = ref(
+            database,
+            `AdeyBonda/pending orders`
+        );
+
+        const newCustomerOrderRef = push(customerOrdersRef);
+        const newPendingOrderRef = push(pendingOrdersRef);
+
+        await Promise.all([
+            set(newCustomerOrderRef, orderData),
+            set(newPendingOrderRef, orderData)
+        ]);
+
+        // ---------------------------------------------------------
+        // 7. Success
+        // ---------------------------------------------------------
+
+        alert(
+            "✅ Order created!\n\n" +
+            "It will expire if not picked up within 3 days."
+        );
+
+        closeModal();
+
+    } catch (error) {
+
+        console.error("Order error:", error);
+
+        alert(
+            "❌ Failed to create order.\n\n" +
+            "Please try again."
+        );
+    }
+}
 
   // ----- Event listeners -----
   // search
