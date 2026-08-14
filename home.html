@@ -1090,18 +1090,15 @@ async function createOrder(product) {
         // 6. Create order in both locations
         // ---------------------------------------------------------
 
-        const customerOrdersRef = ref(
-            database,
-            `AdeyBonda/users/${userId}/orders`
-        );
+        const orderId = push(ref(database, 'AdeyBonda/pending orders')).key;
+				
 
-        const pendingOrdersRef = ref(
-            database,
-            `AdeyBonda/pending orders`
-        );
+				
+				// Point directly to that exact orderId key in both locations
+				const newCustomerOrderRef = ref(database, `AdeyBonda/users/${userId}/orders/${orderId}`);
+				const newPendingOrderRef = ref(database, `AdeyBonda/pending orders/${orderId}`);
+				
 
-        const newCustomerOrderRef = push(customerOrdersRef);
-        const newPendingOrderRef = push(pendingOrdersRef);
 
         await Promise.all([
             set(newCustomerOrderRef, orderData),
