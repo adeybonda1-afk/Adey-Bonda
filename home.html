@@ -770,7 +770,9 @@ nav a:hover:not(.current) {
     onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        allProducts = Object.keys(data).map(key => {
+        allProducts = Object.keys(data)
+          .filter(key => key !== 'selledProducts')
+          .map(key => {
           const productData = data[key].productinformation || data[key];
          return {
             id: key,
