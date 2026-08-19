@@ -516,113 +516,213 @@
         }
 
         // Load orders
-        function loadOrders() {
-            const ordersRef = ref(db, `AdeyBonda/users/${userId}/orders`);
-            
-            onValue(ordersRef, async (snapshot) => {
-                const ordersData = snapshot.val();
-                
-                if (!ordersData) {
-                    ordersContainer.innerHTML = `
-                        <div class="empty-orders">
-                            <i class="fas fa-box-open"></i>
-                            <div>No orders yet</div>
-                            <div style="font-size: 0.85rem; margin-top: 4px;">Start shopping to see your orders here</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                const orderIds = Object.keys(ordersData);
-                let html = '';
-
-                for (const orderId of orderIds) {
-                    const order = ordersData[orderId];
-                    const { productId, timestamp, status } = order;
-
-                    // Get product details
-                    try {
-                        const productRef = ref(db, `AdeyBonda/products/${productId}/productinformation`);
-                        const productSnap = await get(productRef);
-                        const product = productSnap.val();
-
-                        if (product) {
-                            const images = product.images ? product.images.split(',') : [];
-                            const firstImage = images.length > 0 ? images[0] : null;
-                            
-                            const timeInfo = getTimeLeft(timestamp);
-                            const isFailed = status === 'failed' || timeInfo.failed;
-                            const isPending = status === 'pending' || status === undefined;
-                            const isCompleted = status === 'completed';
-
-                            // Determine status class
-                            let statusClass = 'pending';
-                            let statusText = 'Pending';
-                            if (isFailed) {
-                                statusClass = 'failed';
-                                statusText = 'Failed';
-                            } else if (isCompleted) {
-                                statusClass = 'completed';
-                                statusText = 'Completed';
-                            }
-
-                            html += `
-                                <div class="order-card ${isFailed ? 'failed' : ''}">
-                                    <div class="order-info">
-                                        <div class="order-info-top">
-                                            ${firstImage ? 
-                                                `<img src="https://lh3.googleusercontent.com/d/${firstImage}" class="order-thumbnail" alt="${product.name}" />` :
-                                                `<div class="order-thumbnail" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#6f8fa8;"><i class="fas fa-box"></i></div>`
-                                            }
-                                            <div>
-                                                <div class="order-name">${product.name || 'Unnamed'}</div>
-                                                <div class="order-details">
-                                                    <span><i class="fas fa-tag"></i> ${product.type || 'N/A'}</span>
-                                                    <span><i class="fas fa-box"></i> Size ${product.size || 'N/A'}</span>
-                                                    <span><i class="fas fa-money-bill"></i> ${product.price || 0} ETB</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div style="display:flex;gap:8px;margin-top:4px;">
-                                            <span class="order-status ${statusClass}">${statusText}</span>
-                                        </div>
-                                    </div>
-                                    <div class="order-time ${isFailed ? 'failed-time' : timeInfo.failed ? '' : timeInfo.text.includes('h') && parseInt(timeInfo.text) < 6 ? 'urgent' : ''}">
-                                        <i class="fas fa-clock"></i> ${isFailed ? 'Failed' : timeInfo.text}
-                                    </div>
-                                </div>
-                            `;
-                        } else {
-                            // Product not found
-                            html += `
-                                <div class="order-card failed">
-                                    <div class="order-info">
-                                        <div class="order-name">Product unavailable</div>
-                                        <div class="order-details">
-                                            <span><i class="fas fa-exclamation-triangle"></i> Product may have been removed</span>
-                                        </div>
-                                    </div>
-                                    <div class="order-time failed-time"><i class="fas fa-clock"></i> Failed</div>
-                                </div>
-                            `;
-                        }
-                    } catch (error) {
-                        console.error('Error loading product:', error);
-                    }
-                }
-
-                if (html) {
-                    ordersContainer.innerHTML = html;
-                } else {
-                    ordersContainer.innerHTML = `
-                        <div class="empty-orders">
-                            <i class="fas fa-box-open"></i>
-                            <div>No orders found</div>
-                        </div>
-                    `;
-                }
-            });
-        }
+ 				function loadOrders() {
+				    const ordersRef = ref(
+				        db,
+				        `AdeyBonda/users/${userId}/orders`
+				    );
+				
+				    onValue(ordersRef, (snapshot) => {
+				        const ordersData = snapshot.val();
+				
+				        if (!ordersData) {
+				            ordersContainer.innerHTML = `
+				                <div class="empty-orders">
+				                    <i class="fas fa-box-open"></i>
+				                    <div>No orders yet</div>
+				                    <div style="font-size: 0.85rem; margin-top: 4px;">
+				                        Start shopping to see your orders here
+				                    </div>
+				                </div>
+				            `;
+				            return;
+				        }
+				
+				        const orderIds = Object.keys(ordersData);
+				        let html = '';
+				
+				        for (const orderId of orderIds) {
+				
+				            const order = ordersData[orderId];
+				
+				            // ---------------------------------------------
+				            // The structure created by home.html
+				            // ---------------------------------------------
+				            const product = order.productInformation || {};
+				
+				            const productId = product.productId;
+				
+				            const timestamp = order.timestamp;
+				
+				            const status = order.status;
+				
+				            const quantity = order.HowMany || 1;
+				
+				            // ---------------------------------------------
+				            // Images are already stored as an array
+				            // ---------------------------------------------
+				            const images = Array.isArray(product.images)
+				                ? product.images
+				                : [];
+				
+				            const firstImage =
+				                images.length > 0 ? images[0] : null;
+				
+				            // ---------------------------------------------
+				            // Calculate remaining time
+				            // ---------------------------------------------
+				            const timeInfo = getTimeLeft(timestamp);
+				
+				            const isFailed =
+				                status === 'failed' ||
+				                timeInfo.failed;
+				
+				            const isPending =
+				                status === 'pending' ||
+				                status === undefined;
+				
+				            const isCompleted =
+				                status === 'completed';
+				
+				            // ---------------------------------------------
+				            // Status
+				            // ---------------------------------------------
+				            let statusClass = 'pending';
+				            let statusText = 'Pending';
+				
+				            if (isFailed) {
+				                statusClass = 'failed';
+				                statusText = 'Failed';
+				
+				            } else if (isCompleted) {
+				                statusClass = 'completed';
+				                statusText = 'Completed';
+				            }
+				
+				            // ---------------------------------------------
+				            // Create order card
+				            // ---------------------------------------------
+				            html += `
+				                <div class="order-card ${isFailed ? 'failed' : ''}">
+				
+				                    <div class="order-info">
+				
+				                        <div class="order-info-top">
+				
+				                            ${
+				                                firstImage
+				                                    ? `
+				                                        <img
+				                                            src="https://lh3.googleusercontent.com/d/${firstImage}"
+				                                            class="order-thumbnail"
+				                                            alt="${product.name || 'Product'}"
+				                                        />
+				                                    `
+				                                    : `
+				                                        <div
+				                                            class="order-thumbnail"
+				                                            style="
+				                                                display:flex;
+				                                                align-items:center;
+				                                                justify-content:center;
+				                                                font-size:1.5rem;
+				                                                color:#6f8fa8;
+				                                            "
+				                                        >
+				                                            <i class="fas fa-box"></i>
+				                                        </div>
+				                                    `
+				                            }
+				
+				                            <div>
+				
+				                                <div class="order-name">
+				                                    ${product.name || 'Unnamed'}
+				                                </div>
+				
+				                                <div class="order-details">
+				
+				                                    <span>
+				                                        <i class="fas fa-tag"></i>
+				                                        ${product.type || 'N/A'}
+				                                    </span>
+				
+				                                    <span>
+				                                        <i class="fas fa-box"></i>
+				                                        Size ${product.size || 'N/A'}
+				                                    </span>
+				
+				                                    <span>
+				                                        <i class="fas fa-money-bill"></i>
+				                                        ${product.price || 0} ETB
+				                                    </span>
+				
+				                                    <span>
+				                                        <i class="fas fa-shopping-cart"></i>
+				                                        Quantity: ${quantity}
+				                                    </span>
+				
+				                                    <span>
+				                                        <i class="fas fa-fingerprint"></i>
+				                                        Product ID: ${productId || 'N/A'}
+				                                    </span>
+				
+				                                </div>
+				
+				                            </div>
+				
+				                        </div>
+				
+				                        <div style="
+				                            display:flex;
+				                            gap:8px;
+				                            margin-top:4px;
+				                        ">
+				
+				                            <span class="order-status ${statusClass}">
+				                                ${statusText}
+				                            </span>
+				
+				                        </div>
+				
+				                    </div>
+				
+				                    <div class="
+				                        order-time
+				                        ${
+				                            isFailed
+				                                ? 'failed-time'
+				                                : timeInfo.failed
+				                                    ? ''
+				                                    : timeInfo.text.includes('h') &&
+				                                      parseInt(timeInfo.text) < 6
+				                                        ? 'urgent'
+				                                        : ''
+				                        }
+				                    ">
+				                        <i class="fas fa-clock"></i>
+				                        ${isFailed ? 'Failed' : timeInfo.text}
+				                    </div>
+				
+				                </div>
+				            `;
+				        }
+				
+				        if (html) {
+				
+				            ordersContainer.innerHTML = html;
+				
+				        } else {
+				
+				            ordersContainer.innerHTML = `
+				                <div class="empty-orders">
+				                    <i class="fas fa-box-open"></i>
+				                    <div>No orders found</div>
+				                </div>
+				            `;
+				        }
+				    });
+				}
         
        document.getElementById("logoutBtn").addEventListener("click", () => {
             signOut(auth)
