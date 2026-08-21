@@ -692,6 +692,8 @@ nav a:hover:not(.current) {
   // ----- Firebase imports -----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
   import { getDatabase, ref, onValue, get, push, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
 
   const firebaseConfig = {
     apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
@@ -703,6 +705,14 @@ nav a:hover:not(.current) {
   };
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
+  const auth = getAuth(app);
+
+	onAuthStateChanged(auth, (user) => {
+	    if (!user) {
+	        // User is not logged in
+	        window.location.replace("index.html");
+	    }
+	});
 
   // DOM refs
   const productGrid = document.getElementById('productGrid');
