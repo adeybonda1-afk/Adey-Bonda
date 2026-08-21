@@ -744,6 +744,7 @@ nav a:hover:not(.current) {
   const modalQuantityInput = document.getElementById('quantityInput');
   const modalQuantity = document.getElementById('modalQuantity');
 
+let creatingOrder = false;
 
   // state
   let allProducts = [];
@@ -953,10 +954,13 @@ nav a:hover:not(.current) {
 
   // ----- Create order -----
 async function createOrder(product) {
+    if (creatingOrder) return;
     if (!product?.id) {
         alert("Invalid product.");
         return;
     }
+    
+    creatingOrder = true;
 
     const productId = product.id;
     const requestedQuantity = Number(modalQuantityInput.value);
@@ -964,6 +968,7 @@ async function createOrder(product) {
     // 1. Validate requested quantity
     if (!Number.isInteger(requestedQuantity) || requestedQuantity < 1) {
         alert("Enter a valid quantity.");
+        creatingOrder = false;
         return;
     }
 
@@ -990,6 +995,7 @@ async function createOrder(product) {
 
         if (!productSnapshot.exists()) {
             alert("❌ This product is no longer available.");
+            creatingOrder = false;
             return;
         }
 
@@ -1032,6 +1038,7 @@ async function createOrder(product) {
         // Another customer may have taken the stock first.
         if (!transactionResult.committed) {
             alert("❌ Sorry, there is not enough stock available.");
+            creatingOrder = false;
             return;
         }
 
@@ -1111,6 +1118,7 @@ async function createOrder(product) {
             "✅ Order created!\n\n" +
             "It will expire if not picked up within 3 days."
         );
+        creatingOrder = false;
 
         closeModal();
 
@@ -1122,6 +1130,7 @@ async function createOrder(product) {
             "❌ Failed to create order.\n\n" +
             "Please try again."
         );
+        creatingOrder = false;
     }
 }
 
