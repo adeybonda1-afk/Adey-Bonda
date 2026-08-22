@@ -441,7 +441,7 @@
                 }
                 const data = snapshot.val();
                 nameInput.value = data.name || "";
-                telInput.value = data.phoneNumber || "";
+                telInput.value = data.phone || "";
             } catch (error) {
                 showError(error.message);
             } finally {
@@ -477,7 +477,7 @@
                 showLoader();
                 await update(UserRef, {
                     name: name,
-                    phoneNumber: phone
+                    phone: phone
                 });
 
                 showToast("Profile updated successfully!");
