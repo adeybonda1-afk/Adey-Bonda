@@ -246,7 +246,7 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
     }
 });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         await set(
             ref(db, `AdeyBonda/users/${user.uid}/email`),
