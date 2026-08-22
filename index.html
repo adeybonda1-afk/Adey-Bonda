@@ -239,11 +239,6 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
         
         localStorage.setItem("userId", user.uid);     
 
-        await set(
-            ref(db, `AdeyBonda/users/${user.uid}/email`),
-            user.email
-        );   
-
     } catch (error) {
         iscreatingAcc = false;
         console.log(error);
@@ -253,7 +248,10 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-
+        await set(
+            ref(db, `AdeyBonda/users/${user.uid}/email`),
+            user.email
+        );   
         if(iscreatingAcc == false){
              localStorage.setItem("IsInformationEntered", "true");
              window.location.href = "home.html";
