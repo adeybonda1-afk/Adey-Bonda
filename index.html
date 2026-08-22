@@ -210,7 +210,9 @@
     <script type="module">
      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";       
+      from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"; 
+      import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+      
  const firebaseConfig = {
   apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
   authDomain: "adey-bonda.firebaseapp.com",
@@ -222,6 +224,7 @@
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getDatabase(app);
 const provider = new GoogleAuthProvider();      
 let IsInformationEntered = localStorage.getItem("IsInformationEntered");
 let iscreatingAcc = false;
@@ -234,7 +237,12 @@ document.getElementById("googleSignIn").addEventListener("click", async () => {
 
         // Save user ID
         
-        localStorage.setItem("userId", user.uid);        
+        localStorage.setItem("userId", user.uid);     
+
+        await set(
+            ref(db, `AdeyBonda/users/${user.uid}/email`),
+            user.email
+        );   
 
     } catch (error) {
         iscreatingAcc = false;
