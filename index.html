@@ -228,14 +228,16 @@ let iscreatingAcc = false;
 
 document.getElementById("googleSignIn").addEventListener("click", async () => {
     try {
+        iscreatingAcc = true;
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
         // Save user ID
-        iscreatingAcc = true;
+        
         localStorage.setItem("userId", user.uid);        
 
     } catch (error) {
+        iscreatingAcc = false;
         console.log(error);
         alert(error.message);
     }
