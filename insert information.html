@@ -291,6 +291,11 @@
         <input id="tel-input" type="tel" placeholder="Enter your phone number" aria-label="Phone number" autocomplete="tel">
       </div>
 
+			<div class="input-group">
+			  <span class="icon">🎂</span>
+			  <input id="age-input" type="number" placeholder="Age (optional)" aria-label="Your age" min="1" max="120">
+			</div>      
+
       <button id="submit-button" class="btn-done" type="submit">
         <span>Done</span>
         <span class="arrow">→</span>
@@ -321,6 +326,7 @@
     // ----- DOM refs -----
     const form = document.getElementById("info-form");
     const nameInput = document.getElementById("name-input");
+    const ageInput = document.getElementById("age-input");
     const telInput = document.getElementById("tel-input");
     const submitBtn = document.getElementById("submit-button");
 
@@ -334,11 +340,21 @@
 
       const name = nameInput.value.trim();
       const tel = telInput.value.trim();
+      const age = ageInput.value.trim();
 
       if (name === "" || tel === "") {
         alert("Please fill in both fields ✏️");
         return;
       }
+
+    	if (age !== "") {
+			  const ageNumber = Number(age);
+			
+			  if (!Number.isInteger(ageNumber) || ageNumber < 1 || ageNumber > 120) {
+			    alert("Please enter a valid age between 1 and 120.");
+			    return;
+			  }
+			}
 
       // simple phone number validation (basic)
       const telClean = tel.replace(/\s/g, '');
@@ -359,11 +375,20 @@
       }
 
       try {
-        await set(ref(database, `AdeyBonda/users/${userId}`), {
-          name: name,
-          phoneNumber: tel,
-          timestamp: Date.now()
-        });
+				const userData = {
+				  name: name,
+				  phoneNumber: tel,
+				  timestamp: Date.now()
+				};
+				
+				if (age !== "") {
+				  userData.age = Number(age);
+				}
+				
+				await set(
+				  ref(database, `AdeyBonda/users/${userId}`),
+				  userData
+				);
                 
 
         alert("✅ Data saved successfully!");
