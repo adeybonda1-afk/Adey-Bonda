@@ -209,371 +209,133 @@
     </div>
   <script type="module">
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 
-    import {
-        getAuth,
-        GoogleAuthProvider,
-        signInWithPopup,
-        getAdditionalUserInfo,
-        onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-    import {
-        getDatabase,
-        ref,
-        update
-    } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
-
-
-    // =========================================================
-    // FIREBASE CONFIG
-    // =========================================================
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
-        authDomain: "adey-bonda.firebaseapp.com",
-        projectId: "adey-bonda",
-        storageBucket: "adey-bonda.firebasestorage.app",
-        messagingSenderId: "820555835547",
-        appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
-    };
+import {
+    getDatabase,
+    ref,
+    set
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 
-    // =========================================================
-    // INITIALIZE FIREBASE
-    // =========================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+    authDomain: "adey-bonda.firebaseapp.com",
+    projectId: "adey-bonda",
+    storageBucket: "adey-bonda.firebasestorage.app",
+    messagingSenderId: "820555835547",
+    appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+};
 
-    const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-    const auth = getAuth(app);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const provider = new GoogleAuthProvider();
 
-    const db = getDatabase(app);
+let IsInformationEntered =
+    localStorage.getItem("IsInformationEntered");
 
-    const provider = new GoogleAuthProvider();
-
-
-    // =========================================================
-    // ELEMENT
-    // =========================================================
-
-    const googleButton =
-        document.getElementById("googleSignIn");
-
-
-    // =========================================================
-    // STATE
-    // =========================================================
-
-    let signingIn = false;
+let iscreatingAcc = false;
 
 
-    // =========================================================
-    // SAVE USER EMAIL
-    // =========================================================
+document.getElementById("googleSignIn").addEventListener("click", async () => {
 
-    async function saveUserEmail(user) {
+    try {
 
-        if (!user || !user.uid) {
-            throw new Error("Invalid Firebase user.");
-        }
+        iscreatingAcc = true;
 
-        if (!user.email) {
-            throw new Error(
-                "Google account did not provide an email address."
-            );
-        }
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-        await update(
-            ref(db, `AdeyBonda/users/${user.uid}`),
-            {
-                email: user.email
-            }
-        );
+        // Save user ID
+        localStorage.setItem("userId", user.uid);
 
-        console.log(
-            "Email saved:",
+        // Save user's email
+        await set(
+            ref(db, `AdeyBonda/users/${user.uid}/email`),
             user.email
         );
+
+    } catch (error) {
+
+        iscreatingAcc = false;
+
+        console.log(error);
+        alert(error.message);
+
     }
 
+});
 
-    // =========================================================
-    // REDIRECT USER
-    // =========================================================
 
-    function redirectUser(isNewUser) {
+onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+
+        if (iscreatingAcc == false) {
+
+            localStorage.setItem("IsInformationEntered", "true");
+
+            window.location.href = "home.html";
+
+            return;
+        }
+
+
+        // Save the user's unique ID
+        localStorage.setItem("userId", user.uid);
+
+
+        // Check if this is a new user
+        const creation =
+            new Date(user.metadata.creationTime).getTime();
+
+        const lastSignIn =
+            new Date(user.metadata.lastSignInTime).getTime();
+
+        const isNewUser =
+            Math.abs(lastSignIn - creation) < 10000;
+
 
         if (isNewUser) {
 
+            // First time signing in
             localStorage.setItem(
                 "IsInformationEntered",
                 "false"
             );
 
-            console.log(
-                "NEW ACCOUNT → insert information.html"
-            );
-
-            window.location.replace(
-                "insert information.html"
-            );
+            window.location.href =
+                "insert information.html";
 
         } else {
 
+            // Returning user
             localStorage.setItem(
                 "IsInformationEntered",
                 "true"
             );
 
-            console.log(
-                "EXISTING ACCOUNT → home.html"
-            );
-
-            window.location.replace(
-                "home.html"
-            );
+            window.location.href =
+                "home.html";
         }
+
+    } else {
+
+        console.log("Not logged in");
+
     }
 
-
-    // =========================================================
-    // GOOGLE SIGN-IN
-    // =========================================================
-
-    if (googleButton) {
-
-        googleButton.addEventListener(
-            "click",
-            async () => {
-
-                // Prevent double clicks
-                if (signingIn) {
-                    return;
-                }
-
-                signingIn = true;
-
-                googleButton.disabled = true;
-
-                const originalText =
-                    googleButton.textContent;
-
-                googleButton.textContent =
-                    "Signing in...";
-
-
-                try {
-
-                    console.log(
-                        "Starting Google sign-in..."
-                    );
-
-
-                    // -------------------------------------------------
-                    // OPEN GOOGLE
-                    // -------------------------------------------------
-
-                    const result =
-                        await signInWithPopup(
-                            auth,
-                            provider
-                        );
-
-
-                    // -------------------------------------------------
-                    // USER
-                    // -------------------------------------------------
-
-                    const user = result.user;
-
-                    if (!user) {
-                        throw new Error(
-                            "Firebase did not return a user."
-                        );
-                    }
-
-
-                    console.log(
-                        "Google sign-in successful."
-                    );
-
-                    console.log(
-                        "UID:",
-                        user.uid
-                    );
-
-                    console.log(
-                        "Email:",
-                        user.email
-                    );
-
-
-                    // -------------------------------------------------
-                    // SAVE UID
-                    // -------------------------------------------------
-
-                    localStorage.setItem(
-                        "userId",
-                        user.uid
-                    );
-
-
-                    // -------------------------------------------------
-                    // CHECK NEW ACCOUNT
-                    // -------------------------------------------------
-
-                    const additionalUserInfo =
-                        getAdditionalUserInfo(result);
-
-                    const isNewUser =
-                        additionalUserInfo?.isNewUser === true;
-
-
-                    console.log(
-                        "Is new Firebase user:",
-                        isNewUser
-                    );
-
-
-                    // -------------------------------------------------
-                    // SAVE EMAIL
-                    // -------------------------------------------------
-
-                    await saveUserEmail(user);
-
-
-                    console.log(
-                        "User information saved."
-                    );
-
-
-                    // -------------------------------------------------
-                    // REDIRECT
-                    // -------------------------------------------------
-
-                    redirectUser(isNewUser);
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Google authentication error:",
-                        error
-                    );
-
-                    console.error(
-                        "Error code:",
-                        error.code
-                    );
-
-                    console.error(
-                        "Error message:",
-                        error.message
-                    );
-
-
-                    // -------------------------------------------------
-                    // HANDLE COMMON ERRORS
-                    // -------------------------------------------------
-
-                    if (
-                        error.code ===
-                        "auth/popup-closed-by-user"
-                    ) {
-
-                        console.log(
-                            "User closed Google sign-in."
-                        );
-
-                    } else if (
-                        error.code ===
-                        "auth/popup-blocked"
-                    ) {
-
-                        alert(
-                            "Google sign-in popup was blocked.\n\n" +
-                            "Please allow popups for this website."
-                        );
-
-                    } else if (
-                        error.code ===
-                        "auth/cancelled-popup-request"
-                    ) {
-
-                        console.log(
-                            "Another Google sign-in request was cancelled."
-                        );
-
-                    } else {
-
-                        alert(
-                            "Google sign-in failed:\n\n" +
-                            error.code +
-                            "\n\n" +
-                            error.message
-                        );
-                    }
-
-
-                    // Allow another attempt
-
-                    signingIn = false;
-
-                    googleButton.disabled = false;
-
-                    googleButton.textContent =
-                        originalText;
-                }
-
-            }
-        );
-    }
-
-
-    // =========================================================
-    // AUTH STATE
-    // =========================================================
-
-    onAuthStateChanged(
-        auth,
-        (user) => {
-
-            if (user) {
-
-                console.log(
-                    "Firebase auth state:",
-                    user.uid
-                );
-
-                /*
-                 * Only keep the UID synchronized here.
-                 *
-                 * DO NOT REDIRECT HERE.
-                 *
-                 * The Google sign-in function above is responsible
-                 * for deciding between:
-                 *
-                 * insert information.html
-                 *
-                 * and
-                 *
-                 * home.html
-                 */
-                localStorage.setItem(
-                    "userId",
-                    user.uid
-                );
-
-            } else {
-
-                console.log(
-                    "Firebase auth state: signed out"
-                );
-            }
-        }
-    );
-
+});
 </script>
 </body>
 </html>
