@@ -207,14 +207,14 @@
             <span><i class="fas fa-shield-alt" style="margin-right: 4px;"></i> encrypted</span>
         </div>
     </div>
-   <script type="module">
+  <script type="module">
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
     import {
         getAuth,
         GoogleAuthProvider,
-        signInWithRedirect,
-        getRedirectResult,
+        signInWithPopup,
         getAdditionalUserInfo,
         onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
@@ -247,6 +247,7 @@
     const app = initializeApp(firebaseConfig);
 
     const auth = getAuth(app);
+
     const db = getDatabase(app);
 
     const provider = new GoogleAuthProvider();
@@ -256,14 +257,15 @@
     // ELEMENT
     // =========================================================
 
-    const googleButton = document.getElementById("googleSignIn");
+    const googleButton =
+        document.getElementById("googleSignIn");
 
 
     // =========================================================
     // STATE
     // =========================================================
 
-    let redirectProcessing = false;
+    let signingIn = false;
 
 
     // =========================================================
@@ -272,7 +274,7 @@
 
     async function saveUserEmail(user) {
 
-        if (!user?.uid) {
+        if (!user || !user.uid) {
             throw new Error("Invalid Firebase user.");
         }
 
@@ -297,272 +299,235 @@
 
 
     // =========================================================
+    // REDIRECT USER
+    // =========================================================
+
+    function redirectUser(isNewUser) {
+
+        if (isNewUser) {
+
+            localStorage.setItem(
+                "IsInformationEntered",
+                "false"
+            );
+
+            console.log(
+                "NEW ACCOUNT → insert information.html"
+            );
+
+            window.location.replace(
+                "insert information.html"
+            );
+
+        } else {
+
+            localStorage.setItem(
+                "IsInformationEntered",
+                "true"
+            );
+
+            console.log(
+                "EXISTING ACCOUNT → home.html"
+            );
+
+            window.location.replace(
+                "home.html"
+            );
+        }
+    }
+
+
+    // =========================================================
     // GOOGLE SIGN-IN
     // =========================================================
 
     if (googleButton) {
 
-        googleButton.addEventListener("click", async () => {
+        googleButton.addEventListener(
+            "click",
+            async () => {
 
-            /*
-             * Prevent double-clicks.
-             */
-            if (redirectProcessing) {
-                return;
+                // Prevent double clicks
+                if (signingIn) {
+                    return;
+                }
+
+                signingIn = true;
+
+                googleButton.disabled = true;
+
+                const originalText =
+                    googleButton.textContent;
+
+                googleButton.textContent =
+                    "Signing in...";
+
+
+                try {
+
+                    console.log(
+                        "Starting Google sign-in..."
+                    );
+
+
+                    // -------------------------------------------------
+                    // OPEN GOOGLE
+                    // -------------------------------------------------
+
+                    const result =
+                        await signInWithPopup(
+                            auth,
+                            provider
+                        );
+
+
+                    // -------------------------------------------------
+                    // USER
+                    // -------------------------------------------------
+
+                    const user = result.user;
+
+                    if (!user) {
+                        throw new Error(
+                            "Firebase did not return a user."
+                        );
+                    }
+
+
+                    console.log(
+                        "Google sign-in successful."
+                    );
+
+                    console.log(
+                        "UID:",
+                        user.uid
+                    );
+
+                    console.log(
+                        "Email:",
+                        user.email
+                    );
+
+
+                    // -------------------------------------------------
+                    // SAVE UID
+                    // -------------------------------------------------
+
+                    localStorage.setItem(
+                        "userId",
+                        user.uid
+                    );
+
+
+                    // -------------------------------------------------
+                    // CHECK NEW ACCOUNT
+                    // -------------------------------------------------
+
+                    const additionalUserInfo =
+                        getAdditionalUserInfo(result);
+
+                    const isNewUser =
+                        additionalUserInfo?.isNewUser === true;
+
+
+                    console.log(
+                        "Is new Firebase user:",
+                        isNewUser
+                    );
+
+
+                    // -------------------------------------------------
+                    // SAVE EMAIL
+                    // -------------------------------------------------
+
+                    await saveUserEmail(user);
+
+
+                    console.log(
+                        "User information saved."
+                    );
+
+
+                    // -------------------------------------------------
+                    // REDIRECT
+                    // -------------------------------------------------
+
+                    redirectUser(isNewUser);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Google authentication error:",
+                        error
+                    );
+
+                    console.error(
+                        "Error code:",
+                        error.code
+                    );
+
+                    console.error(
+                        "Error message:",
+                        error.message
+                    );
+
+
+                    // -------------------------------------------------
+                    // HANDLE COMMON ERRORS
+                    // -------------------------------------------------
+
+                    if (
+                        error.code ===
+                        "auth/popup-closed-by-user"
+                    ) {
+
+                        console.log(
+                            "User closed Google sign-in."
+                        );
+
+                    } else if (
+                        error.code ===
+                        "auth/popup-blocked"
+                    ) {
+
+                        alert(
+                            "Google sign-in popup was blocked.\n\n" +
+                            "Please allow popups for this website."
+                        );
+
+                    } else if (
+                        error.code ===
+                        "auth/cancelled-popup-request"
+                    ) {
+
+                        console.log(
+                            "Another Google sign-in request was cancelled."
+                        );
+
+                    } else {
+
+                        alert(
+                            "Google sign-in failed:\n\n" +
+                            error.code +
+                            "\n\n" +
+                            error.message
+                        );
+                    }
+
+
+                    // Allow another attempt
+
+                    signingIn = false;
+
+                    googleButton.disabled = false;
+
+                    googleButton.textContent =
+                        originalText;
+                }
+
             }
-
-            redirectProcessing = true;
-
-            googleButton.disabled = true;
-
-            /*
-             * Tell the next page load that this page is returning
-             * from Google authentication.
-             */
-            sessionStorage.setItem(
-                "googleRedirectPending",
-                "true"
-            );
-
-            try {
-
-                await signInWithRedirect(
-                    auth,
-                    provider
-                );
-
-                /*
-                 * Normally the browser leaves this page here.
-                 * No redirect code should run after this.
-                 */
-
-            } catch (error) {
-
-                console.error(
-                    "Google sign-in failed:",
-                    error
-                );
-
-                redirectProcessing = false;
-
-                sessionStorage.removeItem(
-                    "googleRedirectPending"
-                );
-
-                googleButton.disabled = false;
-
-                alert(
-                    "Google sign-in failed:\n\n" +
-                    error.message
-                );
-            }
-        });
-    }
-
-
-    // =========================================================
-    // PROCESS GOOGLE REDIRECT
-    // =========================================================
-
-    async function processGoogleRedirect() {
-
-        /*
-         * If another part of the code already started processing,
-         * don't process it again.
-         */
-        if (redirectProcessing) {
-            return;
-        }
-
-        /*
-         * Check whether this page load is returning from Google.
-         */
-        const redirectPending =
-            sessionStorage.getItem(
-                "googleRedirectPending"
-            ) === "true";
-
-        /*
-         * If not returning from Google, there is nothing to process.
-         */
-        if (!redirectPending) {
-            return;
-        }
-
-        redirectProcessing = true;
-
-        try {
-
-            console.log(
-                "Processing Google redirect..."
-            );
-
-            const result =
-                await getRedirectResult(auth);
-
-
-            // -------------------------------------------------
-            // No redirect result
-            // -------------------------------------------------
-
-            if (!result) {
-
-                /*
-                 * Firebase did not return a new sign-in result.
-                 *
-                 * Remove the flag so this page doesn't keep
-                 * trying to process the same redirect.
-                 */
-                sessionStorage.removeItem(
-                    "googleRedirectPending"
-                );
-
-                console.log(
-                    "No Google redirect result."
-                );
-
-                return;
-            }
-
-
-            // -------------------------------------------------
-            // Get user
-            // -------------------------------------------------
-
-            const user = result.user;
-
-            if (!user) {
-                throw new Error(
-                    "Firebase did not return a user."
-                );
-            }
-
-
-            console.log(
-                "Google authentication successful."
-            );
-
-            console.log(
-                "UID:",
-                user.uid
-            );
-
-            console.log(
-                "Email:",
-                user.email
-            );
-
-
-            // -------------------------------------------------
-            // Save UID immediately
-            // -------------------------------------------------
-
-            localStorage.setItem(
-                "userId",
-                user.uid
-            );
-
-
-            // -------------------------------------------------
-            // Determine NEW or EXISTING account
-            // -------------------------------------------------
-
-            const additionalUserInfo =
-                getAdditionalUserInfo(result);
-
-            const isNewUser =
-                additionalUserInfo?.isNewUser === true;
-
-
-            console.log(
-                "New Firebase account:",
-                isNewUser
-            );
-
-
-            // -------------------------------------------------
-            // Save email
-            // -------------------------------------------------
-
-            await saveUserEmail(user);
-
-
-            // -------------------------------------------------
-            // Store account state
-            // -------------------------------------------------
-
-            if (isNewUser) {
-
-                localStorage.setItem(
-                    "IsInformationEntered",
-                    "false"
-                );
-
-                console.log(
-                    "New account → insert information"
-                );
-
-            } else {
-
-                localStorage.setItem(
-                    "IsInformationEntered",
-                    "true"
-                );
-
-                console.log(
-                    "Existing account → home"
-                );
-            }
-
-
-            // -------------------------------------------------
-            // Clear redirect flag BEFORE navigation
-            // -------------------------------------------------
-
-            sessionStorage.removeItem(
-                "googleRedirectPending"
-            );
-
-
-            // -------------------------------------------------
-            // REDIRECT
-            // -------------------------------------------------
-
-            if (isNewUser) {
-
-                window.location.replace(
-                    "insert information.html"
-                );
-
-            } else {
-
-                window.location.replace(
-                    "home.html"
-                );
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Google redirect processing failed:",
-                error
-            );
-
-            sessionStorage.removeItem(
-                "googleRedirectPending"
-            );
-
-            redirectProcessing = false;
-
-            if (googleButton) {
-                googleButton.disabled = false;
-            }
-
-            alert(
-                "Authentication failed:\n\n" +
-                error.message
-            );
-        }
+        );
     }
 
 
@@ -570,56 +535,44 @@
     // AUTH STATE
     // =========================================================
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(
+        auth,
+        (user) => {
 
-        /*
-         * IMPORTANT:
-         *
-         * This listener does NOT redirect.
-         *
-         * getRedirectResult() is responsible for deciding:
-         *
-         * NEW ACCOUNT
-         *      ↓
-         * insert information.html
-         *
-         * EXISTING ACCOUNT
-         *      ↓
-         * home.html
-         */
+            if (user) {
 
-        if (user) {
+                console.log(
+                    "Firebase auth state:",
+                    user.uid
+                );
 
-            localStorage.setItem(
-                "userId",
-                user.uid
-            );
+                /*
+                 * Only keep the UID synchronized here.
+                 *
+                 * DO NOT REDIRECT HERE.
+                 *
+                 * The Google sign-in function above is responsible
+                 * for deciding between:
+                 *
+                 * insert information.html
+                 *
+                 * and
+                 *
+                 * home.html
+                 */
+                localStorage.setItem(
+                    "userId",
+                    user.uid
+                );
 
-            console.log(
-                "Auth state:",
-                user.uid
-            );
+            } else {
 
-        } else {
-
-            console.log(
-                "No authenticated user."
-            );
+                console.log(
+                    "Firebase auth state: signed out"
+                );
+            }
         }
-    });
-
-
-    // =========================================================
-    // START
-    // =========================================================
-
-    /*
-     * Run immediately.
-     *
-     * This is intentionally separate from
-     * onAuthStateChanged().
-     */
-    processGoogleRedirect();
+    );
 
 </script>
 </body>
