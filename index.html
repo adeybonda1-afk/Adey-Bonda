@@ -34,7 +34,10 @@
 
 
   				onAuthStateChanged(auth, async user => {
-				    if (!user) return;
+				    if (!user){
+				        window.location.replace("continue with Google.html");
+				        return;
+				    } 
 				
 				    localStorage.setItem("userId", user.uid);
 				
