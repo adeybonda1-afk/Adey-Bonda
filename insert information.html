@@ -307,7 +307,7 @@
   <script type="module">
     // ----- Firebase imports (unchanged, same config) -----
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, push, set, update} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -385,7 +385,7 @@
 				  userData.age = Number(age);
 				}
 				
-				await set(
+				await update(
 				  ref(database, `AdeyBonda/users/${userId}`),
 				  userData
 				);
