@@ -33,28 +33,21 @@
         const auth = getAuth(app);
 
 
-        onAuthStateChanged(auth, (user) => {
-
-            if (user) {
-
-                // User is already logged in
-                console.log("Already logged in:", user.uid);
-
-                localStorage.setItem("userId", user.uid);
-
-                window.location.replace("home.html");
-
-            } else {
-
-                // User is not logged in
-                console.log("Not logged in.");
-
-                window.location.replace(
-                    "continue with Google.html"
-                );
-            }
-
-        });
+  				onAuthStateChanged(auth, async user => {
+				    if (!user) return;
+				
+				    localStorage.setItem("userId", user.uid);
+				
+				    const snapshot = await get(ref(db, `AdeyBonda/users/${user.uid}`));
+				
+				    if (snapshot.exists() && snapshot.val()?.IsInformationEntered === true) {
+				        localStorage.setItem("IsInformationEntered", "true");
+				        window.location.replace("home.html");
+				    } else {
+				        localStorage.setItem("IsInformationEntered", "false");
+				        window.location.replace("insert information.html");
+				    }
+				});	
 
     </script>
 
