@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonda · reimagined</title>
+     <link rel="manifest" href="manifest.json">
+    <!-- Font Awesome (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #0b0e1a 0%, #1a1f2f 100%);
+            background-image: radial-gradient(circle at 20% 30%, #2b2f4a 0%, #0c0f1a 90%);
+            padding: 1.5rem;
+            margin: 0;
+            /* subtle animated grain */
+            position: relative;
+        }
+
+        /* glass-morphism card */
+        #main-div {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            background: rgba(20, 25, 45, 0.55);
+            border: 1px solid rgba(255, 215, 100, 0.15);
+            border-radius: 48px;
+            padding: 2.8rem 2.8rem 2.5rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 100, 0.08) inset;
+            transition: all 0.3s ease;
+            color: #f0f3ff;
+            text-align: center;
+        }
+
+        /* brand headline */
+        #main-div h2 {
+            font-size: 2.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #main-div h2 i {
+            font-size: 2.2rem;
+            color: #fbbf24;
+            background: transparent;
+            filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.3));
+        }
+
+        .sub-head {
+            font-size: 0.95rem;
+            color: #aab3d0;
+            letter-spacing: 0.3px;
+            margin-top: -6px;
+            margin-bottom: 2.2rem;
+            border-bottom: 1px dashed rgba(255, 215, 100, 0.15);
+            padding-bottom: 1.2rem;
+        }
+
+        /* all buttons base */
+        button {
+            width: 100%;
+            padding: 0.9rem 0;
+            border: none;
+            border-radius: 60px;
+            font-weight: 550;
+            font-size: 1.05rem;
+            letter-spacing: 0.3px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #f0f3ff;
+            border: 1px solid rgba(255, 215, 100, 0.15);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0.9rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button i {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        /* primary sign in / sign up */
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 1px solid #fbbf24;
+            color: #0b0e1a;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-primary i {
+            color: #1a1f2f;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 16px 32px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
+            border-color: #fbbf24;
+        }
+
+
+
+        /* subtle extra style: glow pulse on card */
+        #main-div::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 48px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), transparent 50%, rgba(245, 158, 11, 0.05));
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        #main-div {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* responsive touch */
+        @media (max-width: 480px) {
+            #main-div {
+                padding: 2rem 1.5rem;
+                border-radius: 32px;
+            }
+            #main-div h2 {
+                font-size: 2.2rem;
+            }
+            button {
+                font-size: 0.95rem;
+                padding: 0.8rem 0;
+            }
+        }
+
+        /* extra micro-interaction */
+        button:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* small icon spacing */
+        .btn-icon {
+            margin-right: 6px;
+        }
+
+        .fa-google {
+            background: transparent;
+        }
+
+        /* hide hr, we use divider */
+        hr {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-div">
+        <h2>
+            <i class="fas fa-bolt" style="font-size: 2rem;"></i> Adey Bonda
+        </h2>
+        <div class="sub-head">
+            <i class="fas fa-circle" style="color: #fbbf24; font-size: 0.4rem; vertical-align: middle; margin-right: 6px;"></i> 
+            welcome back · secure access
+        </div>
+
+        <!-- Google -->
+        <button id="googleSignIn" class="btn-primary">
+            <i class="fab fa-google"></i> Continue with Google
+        </button>
+
+        <!-- subtle extra: small hint -->
+        <div style="margin-top: 1.8rem; font-size: 0.7rem; color: #5e6a92; letter-spacing: 0.2px; display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(255,215,100,0.05); padding-top: 1.2rem;">
+            <span><i class="far fa-clock" style="margin-right: 4px;"></i> 24/7</span>
+            <span><i class="fas fa-shield-alt" style="margin-right: 4px;"></i> encrypted</span>
+        </div>
+    </div>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+import {
+    getDatabase,
+    ref,
+    set
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+    authDomain: "adey-bonda.firebaseapp.com",
+    projectId: "adey-bonda",
+    storageBucket: "adey-bonda.firebasestorage.app",
+    messagingSenderId: "820555835547",
+    appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+const googleButton = document.getElementById("googleSignIn");
+
+
+// --------------------------------------------------
+// GOOGLE SIGN IN
+// --------------------------------------------------
+
+googleButton.addEventListener("click", async () => {
+
+    if (googleButton.disabled) return;
+
+    googleButton.disabled = true;
+    googleButton.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Signing in...
+    `;
+
+    try {
+
+        const result = await signInWithPopup(auth, provider);
+
+        const user = result.user;
+
+        // Firebase directly tells us whether this is a new account
+        const additionalInfo = getAdditionalUserInfo(result);
+        const isNewUser = additionalInfo?.isNewUser === true;
+
+        console.log("User:", user);
+        console.log("UID:", user.uid);
+        console.log("Email:", user.email);
+        console.log("Is new user:", isNewUser);
+
+
+        // --------------------------------------------------
+        // SAVE USER ID
+        // --------------------------------------------------
+
+        localStorage.setItem("userId", user.uid);
+
+
+        // --------------------------------------------------
+        // SAVE EMAIL
+        // --------------------------------------------------
+
+        if (user.email) {
+
+            await set(
+                ref(db, `AdeyBonda/users/${user.uid}/email`),
+                user.email
+            );
+
+            console.log("Email saved successfully.");
+        }
+
+
+        // --------------------------------------------------
+        // NEW USER
+        // --------------------------------------------------
+
+        if (isNewUser) {
+
+            localStorage.setItem(
+                "IsInformationEntered",
+                "false"
+            );
+
+            window.location.replace(
+                "insert information.html"
+            );
+
+            return;
+        }
+
+
+        // --------------------------------------------------
+        // EXISTING USER
+        // --------------------------------------------------
+
+        localStorage.setItem(
+            "IsInformationEntered",
+            "true"
+        );
+
+        window.location.replace("home.html");
+
+
+    } catch (error) {
+
+        console.error("Google sign-in error:", error);
+
+        googleButton.disabled = false;
+
+        googleButton.innerHTML = `
+            <i class="fab fa-google"></i>
+            Continue with Google
+        `;
+
+        alert(error.message);
+    }
+
+});
+
+
+// --------------------------------------------------
+// AUTH STATE PROTECTION
+// --------------------------------------------------
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        console.log("Not logged in.");
+        return;
+    }
+
+    console.log(
+        "Firebase auth state:",
+        user.uid
+    );
+
+});
+    </script>
+</body>
+</html>
