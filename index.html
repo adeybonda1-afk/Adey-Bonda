@@ -16,6 +16,10 @@
             onAuthStateChanged
         }
             from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+const db = getDatabase(app);
+
 
 
         const firebaseConfig = {
