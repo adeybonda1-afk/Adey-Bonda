@@ -45,7 +45,8 @@ const db = getDatabase(app);
 				
 				    const snapshot = await get(ref(db, `AdeyBonda/users/${user.uid}`));
 				
-				    if (snapshot.exists() && snapshot.val()?.name) {
+          const data = snapshot.val();
+				    if (snapshot.exists() && data?.name) {
 				        localStorage.setItem("IsInformationEntered", "true");
 				        window.location.replace("home.html");
 				    } else {
