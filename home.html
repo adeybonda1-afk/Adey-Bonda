@@ -604,7 +604,13 @@ nav a:hover:not(.current) {
         </div>
       </div>
       <div class="filter-group">
-        <label><i class="fas fa-ruler"></i> Size range</label>
+        <label><i class="fas fa-ruler"></i> Size</label>
+        <select id="sizeSelect">
+          <option value="">All Sizes</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-ruler-horizontal"></i> Shoe size range</label>
         <div class="range-inputs">
           <input type="number" id="sizeFrom" placeholder="From" min="0" />
           <input type="number" id="sizeTo" placeholder="To" min="0" />
@@ -708,7 +714,7 @@ nav a:hover:not(.current) {
   const auth = getAuth(app);
 
 	onAuthStateChanged(auth, (user) => {
-	    if (!user) {
+	   if (!user) {
 	        // User is not logged in
 	        window.location.replace("index.html");
 	    }
@@ -726,6 +732,7 @@ nav a:hover:not(.current) {
   const applyBtn = document.getElementById('apply-filter-btn');
   const clearBtn = document.getElementById('clear-filter-btn');
   const genderRadios = document.querySelectorAll('input[name="gender"]');
+  const sizeSelect = document.getElementById('sizeSelect');
   const sizeFrom = document.getElementById('sizeFrom');
   const sizeTo = document.getElementById('sizeTo');
   const brandSelect = document.getElementById('brandSelect');
@@ -733,6 +740,10 @@ nav a:hover:not(.current) {
   const priceFrom = document.getElementById('priceFrom');
   const priceTo = document.getElementById('priceTo');
   const genderTag = document.getElementById('genderTag');
+  const sizeTag = document.createElement('span');
+  sizeTag.className = 'filter-tag';
+  sizeTag.id = 'sizeTag';
+  document.getElementById('filterBar').insertBefore(sizeTag, document.getElementById('brandTag'));
   const brandTag = document.getElementById('brandTag');
   const categoryTag = document.getElementById('categoryTag');
   const priceTag = document.getElementById('priceTag');
@@ -761,6 +772,7 @@ let creatingOrder = false;
   let filteredProducts = [];
   let currentFilters = {
     gender: 'all',
+    size: '',
     sizeFrom: '',
     sizeTo: '',
     brand: '',
@@ -799,6 +811,7 @@ let creatingOrder = false;
           };
         });
         populateBrands(allProducts);
+        populateSizes(allProducts);
         applyFiltersAndRender();
       } else {
         allProducts = [];
@@ -823,21 +836,36 @@ let creatingOrder = false;
     brandSelect.value = currentVal;
   }
 
+  function populateSizes(products) {
+    const sizes = [...new Set(products.map(p => String(p.size || '').trim()).filter(s => s && s !== 'N/A'))];
+    const currentVal = sizeSelect.value;
+    sizes.sort((a, b) => {
+      const na = Number(a), nb = Number(b);
+      if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+      if (!Number.isNaN(na)) return -1;
+      if (!Number.isNaN(nb)) return 1;
+      const order = { S: 1, M: 2, L: 3, XL: 4, XXL: 5, 'One size': 6 };
+      return (order[a] || 99) - (order[b] || 99) || a.localeCompare(b);
+    });
+    sizeSelect.innerHTML = '<option value="">All Sizes</option>' + sizes.map(size => `<option value="${size}">${size}</option>`).join('');
+    sizeSelect.value = sizes.includes(currentVal) ? currentVal : '';
+  }
+
   // filter & render
   function filterProducts(products, filters, query) {
     return products.filter(p => {
       if (query) {
         const q = query.toLowerCase();
-        if (!p.name.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
+        if (!p.name.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q) && !String(p.size).toLowerCase().includes(q)) return false;
       }
       if (filters.gender && filters.gender !== 'all' && p.gender !== filters.gender) return false;
+      if (filters.size && String(p.size).toLowerCase() !== filters.size.toLowerCase()) return false;
       if (filters.sizeFrom !== '' || filters.sizeTo !== '') {
         const sizeNum = parseFloat(p.size);
-        if (!isNaN(sizeNum)) {
-          const from = filters.sizeFrom !== '' ? parseFloat(filters.sizeFrom) : -Infinity;
-          const to = filters.sizeTo !== '' ? parseFloat(filters.sizeTo) : Infinity;
-          if (sizeNum < from || sizeNum > to) return false;
-        }
+        if (isNaN(sizeNum)) return false;
+        const from = filters.sizeFrom !== '' ? parseFloat(filters.sizeFrom) : -Infinity;
+        const to = filters.sizeTo !== '' ? parseFloat(filters.sizeTo) : Infinity;
+        if (sizeNum < from || sizeNum > to) return false;
       }
       if (filters.brand && p.brand !== filters.brand) return false;
       if (filters.category && p.category !== filters.category) return false;
@@ -879,6 +907,7 @@ let creatingOrder = false;
   function updateFilterTags() {
     const f = currentFilters;
     genderTag.innerHTML = `👤 ${f.gender === 'all' ? 'All' : f.gender}`;
+    sizeTag.innerHTML = `📏 ${f.size || (f.sizeFrom || f.sizeTo ? `${f.sizeFrom || 'Any'}-${f.sizeTo || 'Any'}` : 'All')}`;
     brandTag.innerHTML = `🏷️ ${f.brand || 'All'}`;
     categoryTag.innerHTML = `📂 ${f.category || 'All'}`;
     let priceText = 'All';
@@ -893,6 +922,7 @@ let creatingOrder = false;
     const gender = genderEl ? genderEl.value : 'all';
     currentFilters = {
       gender,
+      size: sizeSelect.value,
       sizeFrom: sizeFrom.value.trim(),
       sizeTo: sizeTo.value.trim(),
       brand: brandSelect.value,
@@ -909,8 +939,8 @@ let creatingOrder = false;
 
   function clearFilters() {
     document.querySelector('input[name="gender"][value="all"]').checked = true;
-    sizeFrom.value = ''; sizeTo.value = ''; brandSelect.value = ''; categorySelect.value = ''; priceFrom.value = ''; priceTo.value = '';
-    currentFilters = { gender: 'all', sizeFrom: '', sizeTo: '', brand: '', category: '', priceFrom: '', priceTo: '' };
+    sizeSelect.value = ''; sizeFrom.value = ''; sizeTo.value = ''; brandSelect.value = ''; categorySelect.value = ''; priceFrom.value = ''; priceTo.value = '';
+    currentFilters = { gender: 'all', size: '', sizeFrom: '', sizeTo: '', brand: '', category: '', priceFrom: '', priceTo: '' };
     updateFilterTags();
     filteredProducts = filterProducts(allProducts, currentFilters, searchQuery);
     renderProducts(filteredProducts);
@@ -1154,6 +1184,7 @@ async function createOrder(product) {
   searchBtn.addEventListener('click', performSearch);
   searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
 
+  sizeSelect.addEventListener('change', () => { sizeFrom.value = ''; sizeTo.value = ''; });
   filterToggleBtn.addEventListener('click', () => {
     const isOpen = filterPanel.classList.toggle('open');
     filterToggleLabel.textContent = isOpen ? 'Hide filters' : 'Show filters';
