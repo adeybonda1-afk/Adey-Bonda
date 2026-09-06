@@ -349,6 +349,11 @@
             <input id="tel" type="tel" placeholder="Enter your phone number" />
         </div>
 
+        <div class="form-group">
+            <label><i class="fas fa-calendar-alt"></i> Age</label>
+            <input id="age" type="number" placeholder="Enter your age" min="1" max="120" step="1" />
+        </div>
+
         <button id="changeBtn" class="change-btn">
             <i class="fas fa-save"></i> Save Changes
         </button>
@@ -394,6 +399,7 @@
 
         const nameInput = document.getElementById("name");
         const telInput = document.getElementById("tel");
+        const ageInput = document.getElementById("age");
         const changeBtn = document.getElementById("changeBtn");
         const EDele = document.getElementById("error-displayer");
         const errorText = document.getElementById("error-text");
@@ -442,6 +448,7 @@
                 const data = snapshot.val();
                 nameInput.value = data.name || "";
                 telInput.value = data.phone || "";
+                ageInput.value = data.age ?? "";
             } catch (error) {
                 showError(error.message);
             } finally {
@@ -453,6 +460,8 @@
         async function changeInformation() {
             const name = nameInput.value.trim();
             const phone = telInput.value.trim();
+            const ageValue = ageInput.value.trim();
+            const age = ageValue === "" ? null : Number(ageValue);
 
             // Validation
             if (!name) {
@@ -473,11 +482,18 @@
                 return;
             }
 
+            if (ageValue !== "" && (!Number.isInteger(age) || age < 1 || age > 120)) {
+                showError("Please enter a valid age between 1 and 120");
+                ageInput.focus();
+                return;
+            }
+
             try {
                 showLoader();
                 await update(UserRef, {
                     name: name,
-                    phone: phone
+                    phone: phone,
+                    age: age
                 });
 
                 showToast("Profile updated successfully!");
