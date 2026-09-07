@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>Adey Bonda</title>
+
+    <script type="module">
+
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+        import {
+            getAuth,
+            onAuthStateChanged
+        }
+            from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpLcSFmn1gNTklHu2eiebDYtXpq0qIhlM",
+            authDomain: "adey-bonda.firebaseapp.com",
+            projectId: "adey-bonda",
+            storageBucket: "adey-bonda.firebasestorage.app",
+            messagingSenderId: "820555835547",
+            appId: "1:820555835547:web:efc14ad017ab4d206f7e3e"
+        };
+
+
+        const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+        const auth = getAuth(app);
+
+
+  				onAuthStateChanged(auth, async user => {
+				    if (!user){
+				        window.location.replace("continue with Google.html");
+				        return;
+				    } 
+				
+				    localStorage.setItem("userId", user.uid);
+				
+				    const snapshot = await get(ref(db, `AdeyBonda/users/${user.uid}`));
+				
+          const data = snapshot.val();
+				    if (snapshot.exists() && data?.name) {
+				        localStorage.setItem("IsInformationEntered", "true");
+				        window.location.replace("home.html");
+				    } else {
+				        localStorage.setItem("IsInformationEntered", "false");
+				        window.location.replace("insert information.html");
+				    }
+				});	
+
+    </script>
+
+</head>
+
+<body>
+
+    <p>Loading...</p>
+
+</body>
+</html>

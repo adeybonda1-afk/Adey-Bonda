@@ -1,0 +1,8 @@
+{
+  "name": "adey-bonda-customer",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "firebase-admin": "14.3.0"
+  }
+}
