@@ -44,7 +44,7 @@ function createEnableButton(role) {
   banner.innerHTML = `
     <div style="font-size:24px;line-height:1">🔔</div>
     <div style="flex:1;min-width:0">
-      <div style="font-weight:800;font-size:14px">Turn on notifications</div>
+      <div style="font-weight:800;font-size:14px">Turn on notifications A</div>
       <div style="opacity:.82;font-size:12px;margin-top:3px">
         ${role === "owner" ? "Get a notification when a customer orders or sends a message." : "Get important updates about your orders and messages."}
       </div>
@@ -142,7 +142,7 @@ async function enablePush(role, credentialOverride = null) {
         localStorage.setItem(role === "owner" ? "ownerPushInstallationId" : "customerPushInstallationId", installationId);
         console.log("FCM installation registered:", installationId);
       } catch (error) {
-        console.error("Could not store FCM installation ID:", error);
+        alert("Could not store FCM installation ID:", error);
       }
     });
 
@@ -166,7 +166,7 @@ async function enablePush(role, credentialOverride = null) {
           notification.close();
         };
       } catch (error) {
-        console.warn("Foreground notification could not be shown:", error);
+        alert("Foreground notification could not be shown:", error);
       }
     });
 
@@ -177,7 +177,7 @@ async function enablePush(role, credentialOverride = null) {
 
     return { ok: true };
   } catch (error) {
-    console.error("Push setup failed:", error);
+    alert("Push setup failed:", error);
     return { ok: false, reason: error.message };
   }
 }
@@ -194,7 +194,7 @@ export async function setupCustomerPush(user) {
       createEnableButton("customer");
     }
   } catch (error) {
-    console.warn("Customer push initialization failed:", error);
+    alert("Customer push initialization failed:", error);
   }
 }
 
@@ -208,7 +208,7 @@ export async function setupOwnerPush() {
       createEnableButton("owner");
     }
   } catch (error) {
-    console.warn("Owner push initialization failed:", error);
+    alert("Owner push initialization failed:", error);
   }
 }
 
