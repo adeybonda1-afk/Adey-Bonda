@@ -44,7 +44,7 @@ function createEnableButton(role) {
   banner.innerHTML = `
     <div style="font-size:24px;line-height:1">🔔</div>
     <div style="flex:1;min-width:0">
-      <div style="font-weight:800;font-size:14px">Turn on notifications A</div>
+      <div style="font-weight:800;font-size:14px">Turn on notifications</div>
       <div style="opacity:.82;font-size:12px;margin-top:3px">
         ${role === "owner" ? "Get a notification when a customer orders or sends a message." : "Get important updates about your orders and messages."}
       </div>
@@ -142,7 +142,7 @@ async function enablePush(role, credentialOverride = null) {
         localStorage.setItem(role === "owner" ? "ownerPushInstallationId" : "customerPushInstallationId", installationId);
         console.log("FCM installation registered:", installationId);
       } catch (error) {
-        alert("Could not store FCM installation ID:", error);
+        alert(`Could not store FCM installation ID: ${error}`);
       }
     });
 
