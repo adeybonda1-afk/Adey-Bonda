@@ -21,8 +21,13 @@ module.exports = async (req, res) => {
     });
 
     return sendJson(res, 200, { ok: true });
-  } catch (error) {
-    console.error("register-push:", error);
-    return sendJson(res, 500, { ok: false, error: "Failed to register push installation" });
-  }
+ 	} catch (error) {
+	    alert(`register-push: ${error}`);
+	
+	    return sendJson(res, 500, {
+	        ok: false,
+	        error: error?.message || String(error),
+	        stack: error?.stack || null
+	    });
+	}
 };
