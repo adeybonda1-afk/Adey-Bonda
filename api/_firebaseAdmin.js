@@ -21,15 +21,55 @@ function getAdminApp() {
   });
 }
 
+let app = null;
+
+function getPrivateKey() {
+  const rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
+  if (!rawKey) return "";
+  // Strip outer quotes if present and normalize escaped newlines
+  let key = rawKey.trim();
+  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+    key = key.slice(1, -1);
+  }
+  return key.replace(/\\n/g, "\n");
+}
+
 function adminServices() {
-  const app = getAdminApp();
+  const dbUrl = process.env.FIREBASE_DATABASE_URL || "https://adey-bonda-default-rtdb.firebaseio.com/";
+
+  if (!app) {
+    if (admin.apps.length > 0) {
+      app = admin.apps[0];
+    } else {
+      const privateKey = getPrivateKey();
+      const clientEmail = (process.env.FIREBASE_CLIENT_EMAIL || "").trim();
+      const projectId = (process.env.FIREBASE_PROJECT_ID || "adey-bonda").trim();
+
+      if (!privateKey || !clientEmail) {
+        throw new Error(`Missing Firebase admin credentials: privateKey=${!!privateKey}, clientEmail=${!!clientEmail}`);
+      }
+
+      const serviceAccount = {
+        projectId,
+        clientEmail,
+        privateKey
+      };
+
+      app = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: dbUrl
+      });
+    }
+  }
+
   return {
-    app,
-    auth: getAuth(app),
-    db: getDatabase(app),
-    messaging: getMessaging(app)
+    admin,
+    db: admin.database(app),
+    auth: admin.auth(app),
+    messaging: admin.messaging(app)
   };
 }
+
 
 function sendJson(res, status, body) {
   res.status(status).json(body);
