@@ -17,7 +17,7 @@ Open `push-config.js` and replace `PASTE_YOUR_PUBLIC_VAPID_KEY_HERE` with the PU
 
 Firebase Console → Project settings → Service accounts → Generate new private key. Keep the downloaded JSON private.
 
-In each Vercel project add these Environment Variables: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `FIREBASE_DATABASE_URL`. In the Owner project also add `OWNER_JWT_SECRET` with a long random string. Redeploy after setting them.
+In each Vercel project add these Environment Variables: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `FIREBASE_DATABASE_URL`. No `OWNER_JWT_SECRET` is required by this notification setup. Use a Vercel Node.js runtime compatible with Firebase Admin SDK 14.x (Node 22 or newer). Redeploy after setting them.
 
 ## 3. Realtime Database rules
 

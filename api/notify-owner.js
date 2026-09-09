@@ -1,19 +1,16 @@
-const { adminServices, getBearer, sendDataMessage, sendJson } = require("./_firebaseAdmin");
-
 module.exports = async (req, res) => {
-  if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "Method not allowed" });
-
   try {
+    if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method not allowed" });
+    const { adminServices, getBearer, sendDataMessage } = require("./_firebaseAdmin");
     const services = adminServices();
     const idToken = getBearer(req);
-    if (!idToken) return sendJson(res, 401, { ok: false, error: "Missing Firebase ID token" });
+    if (!idToken) return res.status(401).json({ ok: false, error: "Missing Firebase ID token" });
 
     const decoded = await services.auth.verifyIdToken(idToken);
     const body = req.body || {};
     const event = String(body.event || "");
-
-    if (!['new_order', 'customer_message'].includes(event)) {
-      return sendJson(res, 400, { ok: false, error: "Unsupported notification event" });
+    if (!["new_order", "customer_message"].includes(event)) {
+      return res.status(400).json({ ok: false, error: "Unsupported notification event" });
     }
 
     const userSnap = await services.db.ref(`AdeyBonda/users/${decoded.uid}`).once("value");
@@ -22,9 +19,7 @@ module.exports = async (req, res) => {
 
     const ownerSnap = await services.db.ref("AdeyBonda/pushTokens/owner").once("value");
     const ownerTokens = ownerSnap.val() || {};
-    const fids = Object.values(ownerTokens)
-      .map((item) => item?.installationId)
-      .filter(Boolean);
+    const fids = Object.values(ownerTokens).map((item) => item?.installationId).filter(Boolean);
 
     let notification;
     if (event === "new_order") {
@@ -39,10 +34,9 @@ module.exports = async (req, res) => {
         tag: `order-${orderId || Date.now()}`
       };
     } else {
-      const message = String(body.message || "New message").trim();
       notification = {
         title: `New message from ${name}`,
-        body: message.slice(0, 180),
+        body: String(body.message || "New message").trim().slice(0, 180),
         type: "customer_message",
         url: "message.html",
         tag: `message-${decoded.uid}`
@@ -50,12 +44,11 @@ module.exports = async (req, res) => {
     }
 
     const result = await sendDataMessage(services.messaging, fids, notification);
-    return sendJson(res, 200, { ok: true, ...result });
+    return res.status(200).json({ ok: true, ...result });
   } catch (error) {
     console.error("notify-owner:", error);
-    if (String(error.code || '').includes('auth/argument-error') || String(error.code || '').includes('auth/id-token')) {
-      return sendJson(res, 401, { ok: false, error: "Invalid Firebase ID token" });
-    }
-    return sendJson(res, 500, { ok: false, error: "Failed to send owner notification" });
+    const code = String(error?.code || "");
+    const status = code.startsWith("auth/") ? 401 : 500;
+    return res.status(status).json({ ok: false, error: error?.message || String(error), code: code || undefined });
   }
 };
