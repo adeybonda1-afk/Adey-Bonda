@@ -101,86 +101,89 @@ async function sendRegistration(role, installationId, credential) {
   return response.json().catch(() => ({ ok: true }));
 }
 
-async function enablePush(role, credentialOverride = null) {
-  try {
-    if (!PUSH_VAPID_KEY || PUSH_VAPID_KEY.includes("PASTE_YOUR_PUBLIC")) {
-      console.warn("Push notifications: add the public VAPID key to push-config.js first.");
-      return { ok: false, reason: "missing-vapid-key" };
+async function enablePush() {
+    alert("Step 1: Push setup started");
+    const state = getPushState();
+    if (!state.supported) {
+        alert("Push notifications are not supported in this browser.");
+        return false;
     }
 
-    if (!("Notification" in window)) throw new Error("Notifications are not supported in this browser.");
-    if (Notification.permission === "denied") {
-      console.warn("Notifications are blocked. Enable them in the browser/site settings.");
-      return { ok: false, reason: "denied" };
-    }
+    try {
+        const perm = await Notification.requestPermission();
+        updatePushUI(perm);
 
-    const supported = await isSupported();
-    if (!supported) throw new Error("FCM web push is not supported in this browser.");
+        if (perm !== "granted") {
+            alert("Notification permission was not granted.");
+            return false;
+        }
+        alert("Step 2: Notification permission granted");
 
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return { ok: false, reason: "permission" };
+        const swReg = await registerServiceWorker();
+        alert("Step 3: Service worker registered");
 
-    const serviceWorkerRegistration = await getServiceWorker();
-    const messaging = getMessaging(pushApp);
+        const messaging = await initMessaging();
+        if (!messaging) {
+            alert("Firebase Messaging is not available.");
+            return false;
+        }
 
-    let credential = credentialOverride;
-    if (!credential) {
-      if (role === "customer") {
-        // Firebase Auth is owned by the calling page; get the current user from the global Firebase Auth instance if provided.
-        const user = window.__adeyBondaCurrentUser;
-        if (!user) throw new Error("Customer account is not ready yet.");
-        credential = await user.getIdToken();
-      } else {
-        credential = localStorage.getItem("ownerAccessToken");
-        if (!credential) throw new Error("Owner session is missing. Please sign in again.");
-      }
-    }
+        alert("Step 4: FCM registration started");
 
-    onRegistered(messaging, async (installationId) => {
-      try {
-        await sendRegistration(role, installationId, credential);
-        localStorage.setItem(role === "owner" ? "ownerPushInstallationId" : "customerPushInstallationId", installationId);
-        console.log("FCM installation registered:", installationId);
-      } catch (error) {
-        alert(`Could not store FCM installation ID: ${error}`);
-      }
-    });
+        // Promise wrapper to await asynchronous onRegistered callback completion
+        const registrationSuccess = await new Promise((resolve, reject) => {
+            let handled = false;
 
-    onMessage(messaging, (payload) => {
-      const data = payload?.data || {};
-      if (Notification.permission !== "granted") return;
-      const title = data.title || "Adey Bonda";
-      const body = data.body || "You have a new notification.";
-      const url = data.url || (role === "owner" ? "home.html" : "home.html");
-      try {
-        const notification = new Notification(title, {
-          body,
-          icon: "Image/Icon.jpg",
-          badge: "Image/Icon.jpg",
-          tag: data.tag || data.type || "adey-bonda",
-          data: { url }
+            onRegistered(messaging, async (installationId) => {
+                if (handled) return;
+                handled = true;
+                alert("Step 5: Installation ID received");
+                alert("Step 6: Calling /api/register-push");
+
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) {
+                        throw new Error("User not authenticated in Firebase Client");
+                    }
+                    const token = await user.getIdToken();
+
+                    const response = await fetch("/api/register-push", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ installationId })
+                    });
+
+                    alert("Step 7: API response status: " + response.status);
+                    const resData = await response.json().catch(() => ({}));
+                    alert("Step 8: API response body: " + JSON.stringify(resData));
+
+                    if (response.ok && resData.ok) {
+                        resolve(true);
+                    } else {
+                        reject(new Error(resData.error || `Server error (${response.status})`));
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            });
+
+            register(messaging, {
+                vapidKey: PUSH_CONFIG.vapidKey,
+                serviceWorkerRegistration: swReg
+            }).catch(reject);
         });
-        notification.onclick = () => {
-          window.focus();
-          window.location.href = url;
-          notification.close();
-        };
-      } catch (error) {
-        alert("Foreground notification could not be shown:", error);
-      }
-    });
 
-    await register(messaging, {
-      vapidKey: PUSH_VAPID_KEY,
-      serviceWorkerRegistration
-    });
-
-    return { ok: true };
-  } catch (error) {
-    alert("Push setup failed:", error);
-    return { ok: false, reason: error.message };
-  }
+        return registrationSuccess;
+    } catch (error) {
+        console.error("Failed to enable push notifications:", error);
+        alert("Push registration failed: " + (error?.message || error));
+        return false;
+    }
 }
+
 
 export async function setupCustomerPush(user) {
   window.__adeyBondaCurrentUser = user;
